@@ -1,7 +1,7 @@
 # QUA
 
 ## Disclaimer
-This project is in a very early stage, everything might be subject to change. Only use code shown here for basic testing.
+This project is in a very early stage, everything might be subject to change. Only use for basic testing.
 
 
 ## Info
