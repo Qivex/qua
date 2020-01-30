@@ -16,7 +16,7 @@ Its main goal is to replace the now outdated [Lycodon-API][1] and improve usabil
 
 
 ## Setup
-1. Download the API
+1. Download the API into folder "apis/qua"
 	- Currently only file-by-file
 	- Script to download all files on [Pastebin][2]
 2. Include the following command in your startup:
