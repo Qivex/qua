@@ -20,9 +20,13 @@ Its main goal is to replace the now outdated [Lycodon-API][1] and improve usabil
 	- Currently only file-by-file
 	- Script to download all files on [Pastebin][2]
 2. Include the following command in your startup:
-	shell.run("apis/qua/core/require")
+```
+shell.run("apis/qua/core/require")
+```
 3. Import modules using `require`:
-	local Class = require "qua.core.class"
+```
+local Class = require "qua.core.class"
+```
 
 
 ## Modules
