@@ -1,7 +1,8 @@
+-- TODO: More robust (checks), Insert+Remove
+
 -- IMPORT
 local Class = require "qua.core.class"
 
--- TODO: More robust (checks), Insert+Remove
 
 -- IMPLEMENTATION
 local BitStream = Class:extend{

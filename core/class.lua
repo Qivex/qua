@@ -1,17 +1,7 @@
---[[
-Qua-API for Lycodon
-File:	qua/core/class.lua
-By:		Qivex
-
-Inspired by:
-https://moonscript.org/reference/#the-language/object-oriented-programming
-]]
-
--- TODO: Clone, Metaevents
+-- Inspired by: https://moonscript.org/reference/#the-language/object-oriented-programming
 
 
--- Implementations:
-
+-- IMPLEMENTATION
 local constructor_wrapper = function(class, ...)
 	local instance = {}
 	-- Redirect undefined lookups into prototype
@@ -22,7 +12,6 @@ local constructor_wrapper = function(class, ...)
 	end
 	return instance
 end
-
 
 local extend = function(class, extension)
 	if type(extension) ~= "table" then
@@ -55,12 +44,8 @@ local extend = function(class, extension)
 	return subclass
 end
 
-
--- Export:
-
 local Class = {}
 Class.__proto = {}
-
 Class.__proto.__name = "qua.core.class"
 Class.__proto.__class = Class
 Class.__proto.__index = Class.__proto
@@ -71,4 +56,6 @@ setmetatable(Class, {
 	__call = constructor_wrapper
 })
 
+
+-- EXPORT
 return Class

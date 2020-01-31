@@ -1,4 +1,4 @@
-
+-- IMPLEMENTATION
 local num2bin = function(num, endian)
 	local binary = ""
 	-- Highest exponent
@@ -26,7 +26,6 @@ local num2bin = function(num, endian)
 	return binary
 end
 
-
 local hex2bits = function(hex)
 	local output = {}
 	for byte in hex:gmatch("..") do
@@ -40,6 +39,7 @@ local hex2bits = function(hex)
 end
 
 
+-- EXPORT
 return {
 	num2bin = num2bin,
 	hex2bits = hex2bits

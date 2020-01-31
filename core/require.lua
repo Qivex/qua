@@ -1,8 +1,4 @@
 --[[
-Qua-API for Lycodon
-File:	qua/core/require.lua
-By:		Qivex
-
 Inspired by:
 https://www.lua.org/pil/8.1.html
 https://www.lua.org/manual/5.3/manual.html#6.3
@@ -10,18 +6,12 @@ https://bitbucket.org/openshell/cc-require/src/default/assets/computercraft/lua/
 ]]
 
 
-
---[[
-Constants
-]]
-
--- Patterns
+-- CONSTANTS
 local MODULE_SEPERATOR_PATTERN = "%."
 local PATH_SEPERATOR_PATTERN = "/"
 local PATH_PLACEHOLDER_PATTERN = "#"
 local CURRENTDIR_PLACEHOLDER_PATTERN = "?"
 
--- Priority of available roots
 local ALLOWED_PATHS = {
 	-- Local Files
 	"?#",
@@ -35,12 +25,7 @@ local ALLOWED_PATHS = {
 }
 
 
-
---[[
-Implementation
-]]
-
--- Helper
+-- IMPLEMENTATION
 local getCurrentPath = function()
 	-- Absolute path to program
 	local program_path = PATH_SEPERATOR_PATTERN .. shell.getRunningProgram()
@@ -49,15 +34,6 @@ local getCurrentPath = function()
 	return parent_dir
 end
 
-
-local package = {
-	loaded = {},
-	preload = {},
-	path = table.concat(ALLOWED_PATHS, ";")
-}
-
-
--- Available loaders
 local createPathLoader = function(module_name, file)
 	local path_loader = function(module_name)
 		-- Setup environment
@@ -90,15 +66,12 @@ local createPathLoader = function(module_name, file)
 	return path_loader
 end
 
-
--- Available searchers
 local preload_searcher = function(module_name)
 	if package.preload[module_name] then
 		return package.preload[module_name]
 	end
 	return "- Loading using Preload failed: No field '" .. module_name .. "' in package.preload"
 end
-
 
 local path_searcher = function(module_name)
 	local missing_files = {}
@@ -117,19 +90,22 @@ local path_searcher = function(module_name)
 	return "- Loading from Path failed. Missing files:\n\t" .. table.concat(missing_files, "\n\t")
 end
 
-
-package.searchers = {
-	preload_searcher,
-	path_searcher
-	-- todo: dir_searcher (loads entire dir without explicit loaders)
+local package = {
+	loaded = {},
+	preload = {},
+	path = table.concat(ALLOWED_PATHS, ";"),
+	searchers = {
+		preload_searcher,
+		path_searcher
+		-- TODO dir_searcher: loads entire dir assuming default inits
+		-- TODO github_searcher: download missing files from github
+	}
 }
 
-
--- Require
 local require = function(module_name, force_refresh)
 	local errors = {}
 	-- Check if previously loaded
-	if package.loaded[module_name] and not(force_refresh) then
+	if package.loaded[module_name] and not force_refresh then
 		return package.loaded[module_name]
 	end
 	-- Execute available searchers
@@ -154,20 +130,15 @@ local require = function(module_name, force_refresh)
 			
 		end
 	end
-	-- Display all errors from all searchers
+	-- Display errors from all searchers
 	error("Module '" .. module_name .. "' was not loaded correctly.\n\nDetails:\n" .. table.concat(errors, "\n"), 2)
 end
 
 
-
---[[
-Export
-]]
-
-if not(_G.package) then
+-- EXPORT
+if not _G.package then
 	_G.package = package
 end
-
-if not(_G.require) then
+if not _G.require then
 	_G.require = require
 end
