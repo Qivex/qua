@@ -1,17 +1,17 @@
 -- IMPLEMENTATION
 local fromArgs = function(args, defaults)
 	local vars = {}
-	local isNamed = #args == 1 and type(args[1]) == "table"
+	local isNamed = (#args == 1 and type(args[1]) == "table")
 	local pos = 1
 	for key, default_value in pairs(defaults) do
 		if isNamed and args[1][key] then
-			vars[key] = args[1][key]
+			vars[pos] = args[1][key]
 		else
-			vars[key] = args[pos] or default_value
+			vars[pos] = args[pos] or default_value
 		end
 		pos = pos + 1
 	end
-	return vars
+	return unpack(vars)
 end
 
 local isIn = function(value, array)
