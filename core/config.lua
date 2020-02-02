@@ -1,13 +1,12 @@
 -- IMPLEMENTATION
-local conf = _G["QUA_CONFIG"]
-conf = {}
+_G.QUA_CONFIG = {}
 
 local set = function(key, value)
-	conf[key] == value
+	_G.QUA_CONFIG[key] = value
 end
 
 local get = function(key)
-	return conf[key]
+	return _G.QUA_CONFIG[key]
 end
 
 
