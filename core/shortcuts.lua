@@ -1,10 +1,11 @@
 -- IMPLEMENTATION
 local fromArgs = function(args, defaults)
 	local vars = {}
+	local named = (#args == 1 and type(args[1]) == "table")	-- assume "named" arguments
 	local pos = 1
 	for name, default_value in pairs(defaults) do
 		local argument = args[pos]
-		if (#args == 1 and type(args[1]) == "table") then	-- assume "named" arguments
+		if named then
 			argument = args[1][name]
 		end
 		vars[pos] = argument or default_value
