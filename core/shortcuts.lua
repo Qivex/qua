@@ -1,14 +1,13 @@
 -- IMPLEMENTATION
 local fromArgs = function(args, defaults)
 	local vars = {}
-	local isNamed = (#args == 1 and type(args[1]) == "table")
 	local pos = 1
-	for key, default_value in pairs(defaults) do
-		if isNamed and args[1][key] then
-			vars[pos] = args[1][key]
-		else
-			vars[pos] = args[pos] or default_value
+	for name, default_value in pairs(defaults) do
+		local argument = args[pos]
+		if (#args == 1 and type(args[1]) == "table") then	-- assume "named" arguments
+			argument = args[1][name]
 		end
+		vars[pos] = argument or default_value
 		pos = pos + 1
 	end
 	return unpack(vars)
