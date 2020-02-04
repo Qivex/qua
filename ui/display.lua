@@ -14,6 +14,10 @@ local Display = Class:extend{
 		self._screens = {}
 	end,
 	
+	getMonitor = function(self)
+		return self._monitor
+	end,
+	
 	getSize = function(self)
 		return self._monitor.getSize()
 	end,
@@ -28,7 +32,7 @@ local Display = Class:extend{
 	
 	addScreen(self, name, screen)
 		if self._screens[name] ~= nil then
-			error("This display already has screen '" .. name .. "'!", 2)
+			error("This display already has a screen called'" .. name .. "'!", 2)
 		end
 		self._screens[name] = screen
 		screen:setDisplay(self)
@@ -53,5 +57,5 @@ local Display = Class:extend{
 }
 
 
--- EXPORT unfinished
--- return Display
+-- EXPORT
+return Display

@@ -12,9 +12,10 @@ local Screen = Class:extend{
 	
 	setDisplay = function(self, display)
 		self._display = display
-		self._background = Window({1,1}, {display.getSize()})
-		self._foreground = Window({1,1}, {display.getSize()})
-		self._foreground:addDynamic(self._background)
+		-- New background if display changes
+		local static_window = Window({1,1}, {display.getSize()})
+		self:addDynamic(static_window)
+		self._background = static_window:getFakeMonitor()
 	end,
 	
 	addStatic = function(self, drawable)
@@ -27,23 +28,21 @@ local Screen = Class:extend{
 	
 	render = function(self)
 		if not self._display then
-			error("Can't draw screen without display!", 2)
+			error("Can't render screen without display!", 2)
 		end
 		-- Draw newly added statics onto background
-		local bg_mon = self._background:getFakeMonitor()
 		for _, drawable in pairs(self._static) do
-			drawable:draw(bg_mon)
+			drawable:draw(self._background)
 		end
 		self._static = {}	-- ... only once
 		-- Call all dynamic draw-functions
-		local fg_mon = self._foreground:getFakeMonitor()
+		local monitor = self._display:getMonitor()
 		for _, drawable in pairs(self._dynamic) do
-			drawable:draw(fg_mon)
+			drawable:draw(monitor)
 		end
-		-- TODO: Draw finished window onto display
 	end
 }
 
 
--- EXPORT unfinished
--- return Screen
+-- EXPORT
+return Screen
