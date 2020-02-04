@@ -13,7 +13,7 @@ local Screen = Class:extend{
 	setDisplay = function(self, display)
 		self._display = display
 		-- New background if display changes
-		local static_window = Window({1,1}, {display.getSize()})
+		local static_window = Window({1,1}, {display:getSize()})
 		self:addDynamic(static_window)
 		self._background = static_window:getFakeMonitor()
 	end,
