@@ -3,12 +3,12 @@ local Class = require "qua.core.class"
 
 
 -- IMPLEMENTATION
-local validateColor = function(self, color)
+local validateColor = function(color)
 	if type(color) ~= "number" then
-		error("Expected number", 2)
+		error("Expected number", 3)
 	end
 	if color < 0 then
-		error("Colour out of range", 2)
+		error("Colour out of range", 3)
 	end
 end
 
@@ -37,14 +37,12 @@ local Window = Class:extend{
 				self:_write(text)
 			end,
 			getCursorPos = function()
-				local c = self._cursor
-				return c.pos_x, c.pos_y
+				return self._cursor.pos_x, self._cursor.pos_y
 			end,
 			setCursorPos = function(x, y)
-				local c = self._cursor
 				if type(x) == "number" and type(y) == "number" then
-					c.pos_x = x
-					c.pos_y = y
+					self._cursor.pos_x = x
+					self._cursor.pos_y = y
 				else
 					error("Expected number, number", 2)
 				end
@@ -54,11 +52,11 @@ local Window = Class:extend{
 			end,
 			setTextColor = function(color)
 				validateColor(color)
-				self:_cursor.col = color
+				self._cursor.col = color
 			end,
 			setBackgroundColor = function(color)
 				validateColor(color)
-				self:_cursor.bg = color
+				self._cursor.bg = color
 			end
 		}
 	end,
