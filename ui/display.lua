@@ -30,7 +30,7 @@ local Display = Class:extend{
 		mon.setCursorPos(1, 1)
 	end,
 	
-	addScreen(self, name, screen)
+	addScreen = function(self, name, screen)
 		if self._screens[name] ~= nil then
 			error("This display already has a screen called'" .. name .. "'!", 2)
 		end
@@ -38,18 +38,18 @@ local Display = Class:extend{
 		screen:setDisplay(self)
 	end,
 	
-	getScreen(self, name, screen)
+	getScreen = function(self, name, screen)
 		if self._screens[name] == nil then
 			error("No screen called '" .. name .. "'!", 2)
 		end
 		return self._screens[name]
 	end,
 	
-	getCurrentScreen(self)
+	getCurrentScreen = function(self)
 		return self._activeScreen
 	end,
 	
-	selectScreen(self, name)
+	selectScreen = function(self, name)
 		local screen = self:getScreen(name)
 		self._activeScreen = screen
 		screen:render()
