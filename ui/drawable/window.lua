@@ -63,7 +63,7 @@ local Window = Class:extend{
 	
 	draw = function(self, monitor)
 		for index, pixel in pairs(self._pixels) do
-			local pixel_y = math.ceil(self._width / index)
+			local pixel_y = math.ceil(index / self._width)
 			local pixel_x = index - (pixel_y - 1) * self._width
 			local x = pixel_x + (self._pos_x - 1)
 			local y = pixel_y + (self._pos_y - 1)
