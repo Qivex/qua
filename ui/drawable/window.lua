@@ -17,7 +17,7 @@ local Window = Class:extend{
 	getFakeMonitor = function(self)
 		-- Wrapped monitor is called with dot, but access to "self" required
 		-- Solved like in https://www.lua.org/pil/16.4.html
-		return {
+		return {	-- TODO: clear()
 			write = function(text)
 				self:_write(text)
 			end,
@@ -76,8 +76,8 @@ local Window = Class:extend{
 			-- Can't draw outside of window
 			if 0 < x and x <= self._size[1] and 0 < y and y <= self._size[2] then
 				local pixel = {
-					text = char
-					col = self._cursor.col[1]
+					text = char,
+					col = self._cursor.col[1],
 					bg = self._cursor.col[2]
 				}
 				self._pixels[(y-1) * self._size[1] + x] = pixel	-- 1D-array (avoid nesting)
