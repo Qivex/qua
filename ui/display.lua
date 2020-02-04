@@ -52,6 +52,7 @@ local Display = Class:extend{
 	selectScreen = function(self, name)
 		local screen = self:getScreen(name)
 		self._activeScreen = screen
+		self:clear()
 		screen:render()
 	end
 }
