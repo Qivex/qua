@@ -3,14 +3,29 @@ local Class = require "qua.core.class"
 
 
 -- IMPLEMENTATION
+local validateColor = function(self, color)
+	if type(color) ~= "number" then
+		error("Expected number", 2)
+	end
+	if color < 0 then
+		error("Colour out of range", 2)
+	end
+end
+
+
 local Window = Class:extend{
 	new = function(self, pos, size)
-		self._pos = pos
-		self._size = size
+		self._pos_x = pos[1]
+		self._pos_y = pos[2]
+		self._width = size[1]
+		self._height = size[2]
+		-- Init
 		self._pixels = {}
 		self._cursor = {
-			pos = {1,1},
-			col = {colors.white, colors.black}
+			pos_x = 1,
+			pos_y = 1,
+			col = colors.white,
+			bg = colors.black
 		}
 	end,
 	
@@ -22,33 +37,38 @@ local Window = Class:extend{
 				self:_write(text)
 			end,
 			getCursorPos = function()
-				return unpack(self._cursor.pos)
+				local c = self._cursor
+				return c.pos_x, c.pos_y
 			end,
 			setCursorPos = function(x, y)
+				local c = self._cursor
 				if type(x) == "number" and type(y) == "number" then
-					self._cursor.pos = {x, y}
+					c.pos_x = x
+					c.pos_y = y
 				else
 					error("Expected number, number", 2)
 				end
 			end,
 			getSize = function()
-				return unpack(self._size)
+				return self._width, self._height
 			end,
-			setTextColor = function(col)
-				self:_setColor(1, col)
+			setTextColor = function(color)
+				validateColor(color)
+				self:_cursor.col = color
 			end,
-			setBackgroundColor = function(col)
-				self:_setColor(2, col)
+			setBackgroundColor = function(color)
+				validateColor(color)
+				self:_cursor.bg = color
 			end
 		}
 	end,
 	
 	draw = function(self, monitor)
 		for index, pixel in pairs(self._pixels) do
-			local pixel_x = index % self._size[1]
-			local pixel_y = (index - pixel_x) / self._size[1] + 1
-			local x = pixel_x + self._pos[1] - 1
-			local y = pixel_y + self._pos[2] - 1
+			local pixel_y = math.ceil(self._width / index)
+			local pixel_x = index - (pixel_y - 1) * self._width
+			local x = pixel_x + (self._pos_x - 1)
+			local y = pixel_y + (self._pos_y - 1)
 			monitor.setCursorPos(x, y)
 			monitor.setTextColor(pixel.col)
 			monitor.setBackgroundColor(pixel.bg)
@@ -72,28 +92,18 @@ local Window = Class:extend{
 		end
 		-- Iterate through chars
 		for char in text:gmatch(".") do
-			local x, y = unpack(self._cursor.pos)
+			local x, y = self._cursor.pos_x, self._cursor.pos_y
 			-- Can't draw outside of window
-			if 0 < x and x <= self._size[1] and 0 < y and y <= self._size[2] then
+			if 0 < x and x <= self._width and 0 < y and y <= self._height then
 				local pixel = {
 					text = char,
-					col = self._cursor.col[1],
-					bg = self._cursor.col[2]
+					col = self._cursor.col,
+					bg = self._cursor.bg
 				}
-				self._pixels[(y-1) * self._size[1] + x] = pixel	-- 1D-array (avoid nesting)
+				self._pixels[(y-1) * self._width + x] = pixel	-- 1D-array (avoid nesting)
 			end
-			self._cursor.pos[1] = x + 1
+			self._cursor.pos_x = x + 1
 		end
-	end,
-	
-	_setColor = function(self, i, color)
-		if type(color) ~= "number" then
-			error("Expected number", 2)
-		end
-		if color < 0 then
-			error("Colour out of range", 2)
-		end
-		self._cursor.col[i] = color
 	end
 }
 
