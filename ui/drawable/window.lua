@@ -42,17 +42,17 @@ local Window = Class:extend{
 					return
 				end
 				for i=1, self._width * self._height do
-					table.insert(self._pixels, {
+					self._pixels[i] = {
 						text = " ",
 						col = self._cursor.col,
 						bg = self._cursor.bg
-					})
+					}
 				end
 			end,
 			clearLine = function()
 				local y = self._cursor.pos_y
 				for i=(y-1) * self._width + 1, y * self._width do
-					self._pixel[i] = {
+					self._pixels[i] = {
 						text = " ",
 						col = self._cursor.col,
 						bg = self._cursor.bg
