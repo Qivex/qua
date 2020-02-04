@@ -12,7 +12,6 @@ local validateColor = function(color)
 	end
 end
 
-
 local Window = Class:extend{
 	new = function(self, pos, size)
 		self._pos_x = pos[1]
@@ -32,15 +31,39 @@ local Window = Class:extend{
 	getFakeMonitor = function(self)
 		-- Wrapped monitor is called with dot, but access to "self" required
 		-- Solved like in https://www.lua.org/pil/16.4.html
-		return {	-- TODO: clear()
+		return {	-- Functions behave like term-API
 			write = function(text)
-				self:_write(text)
-			end,
-			clear = function()
-				self._pixels = {}
-				if self._cursor.bg == colors.black then
+				-- Prepare input to mimic term.write()
+				if type(text) == "number" then
+					text = tostring(text)
+					-- Somehow term.write() adds ".0" to ints
+					if not text:find("%.0$") then
+						text = text .. ".0"
+					end
+				elseif type(text) == "string" then
+					text = text:gsub("\t", " ")		-- Tab recognized
+					text = text:gsub("[\r\n]", "?")	-- CR & LF not
+				else
 					return
 				end
+				-- Iterate through chars
+				for char in text:gmatch(".") do
+					local x, y = self._cursor.pos_x, self._cursor.pos_y
+					-- Only draw inside window
+					if 0 < x and x <= self._width and 0 < y and y <= self._height then
+						local pixel = {
+							text = char,
+							col = self._cursor.col,
+							bg = self._cursor.bg
+						}
+						-- 1D-array (avoid nesting)
+						self._pixels[(y-1) * self._width + x] = pixel	
+					end
+					self._cursor.pos_x = x + 1
+				end
+			end,
+			
+			clear = function()
 				for i=1, self._width * self._height do
 					self._pixels[i] = {
 						text = " ",
@@ -49,6 +72,7 @@ local Window = Class:extend{
 					}
 				end
 			end,
+			
 			clearLine = function()
 				local y = self._cursor.pos_y
 				for i=(y-1) * self._width + 1, y * self._width do
@@ -59,9 +83,11 @@ local Window = Class:extend{
 					}
 				end
 			end,
+			
 			getCursorPos = function()
 				return self._cursor.pos_x, self._cursor.pos_y
 			end,
+			
 			setCursorPos = function(x, y)
 				if type(x) == "number" and type(y) == "number" then
 					self._cursor.pos_x = x
@@ -70,13 +96,16 @@ local Window = Class:extend{
 					error("Expected number, number", 2)
 				end
 			end,
+			
 			getSize = function()
 				return self._width, self._height
 			end,
+			
 			setTextColor = function(color)
 				validateColor(color)
 				self._cursor.col = color
 			end,
+			
 			setBackgroundColor = function(color)
 				validateColor(color)
 				self._cursor.bg = color
@@ -94,36 +123,6 @@ local Window = Class:extend{
 			monitor.setTextColor(pixel.col)
 			monitor.setBackgroundColor(pixel.bg)
 			monitor.write(pixel.text)
-		end
-	end,
-	
-	_write = function(self, text)
-		-- Prepare input to mimic term.write()
-		if type(text) == "number" then
-			text = tostring(text)
-			-- Somehow term.write() adds ".0" to ints
-			if not text:find("%.0$") then
-				text = text .. ".0"
-			end
-		elseif type(text) == "string" then
-			text = text:gsub("\t", " ")		-- Tab recognized
-			text = text:gsub("[\r\n]", "?")	-- CR & LF not
-		else
-			return
-		end
-		-- Iterate through chars
-		for char in text:gmatch(".") do
-			local x, y = self._cursor.pos_x, self._cursor.pos_y
-			-- Can't draw outside of window
-			if 0 < x and x <= self._width and 0 < y and y <= self._height then
-				local pixel = {
-					text = char,
-					col = self._cursor.col,
-					bg = self._cursor.bg
-				}
-				self._pixels[(y-1) * self._width + x] = pixel	-- 1D-array (avoid nesting)
-			end
-			self._cursor.pos_x = x + 1
 		end
 	end
 }
