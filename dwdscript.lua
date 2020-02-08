@@ -15,9 +15,9 @@ local files = {
 	"/ui/drawable/window"
 }
 
-for _, path in pairs(files) do
-	local url = BASE_URL .. path .. ".lua"
-	local path = BASE_PATH .. path
+for _, file in pairs(files) do
+	local url = BASE_URL .. file .. ".lua"
+	local path = BASE_PATH .. file
 	local dir = path:match("^(.*)/.-$")
 	if not fs.isDir(dir) then
 		fs.makeDir(dir)
