@@ -27,9 +27,12 @@ local Button = Class:extend{
 	
 	click = function(self)
 		local action = self._action
-		local args = unpack(self._args)
 		if type(action) == "function" then
-			action(args)
+			if self._args == nil then
+				action()
+			else
+				action(unpack(self._args))
+			end
 		end
 	end
 
