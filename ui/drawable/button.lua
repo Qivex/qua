@@ -23,7 +23,7 @@ local Button = Class:extend{
 		self._text:draw(monitor)
 	end,
 	
-	setAction = function(method, ...)
+	setAction = function(self, method, ...)
 		-- Args could include self => impossible in constructor
 		self._action = method
 		self._args = {...}
