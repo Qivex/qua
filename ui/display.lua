@@ -5,7 +5,9 @@ local Class = require "qua.core.class"
 -- IMPLEMENTATION
 local Display = Class:extend{
 	new = function(self, side, scale)
-		if peripheral.getType(side) == "monitor" then
+		if side == "term" then
+			self._monitor = term
+		elseif peripheral.getType(side) == "monitor" then
 			self._monitor = peripheral.wrap(side)
 			self._monitor.setTextScale(scale)
 		else
