@@ -1,5 +1,7 @@
 -- IMPORT
 local Class = require "qua.core.class"
+local Box = require "qua.ui.drawable.box"
+local Text = require "qua.ui.drawable.text"
 
 
 -- IMPLEMENTATION
