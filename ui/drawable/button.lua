@@ -6,7 +6,7 @@ local Text = require "qua.ui.drawable.text"
 
 -- IMPLEMENTATION
 local Button = Class:extend{
-	new = function(self, caption, pos, size, txcol, bgcol, action, args)
+	new = function(self, caption, pos, size, txcol, bgcol)
 		self._box = Box(pos, size, bgcol)
 		-- Calculate position of text
 		local x, y = self._box:getPos()
@@ -16,8 +16,6 @@ local Button = Class:extend{
 			y + math.floor((h - 1) / 2)
 		}
 		self._text = Text(caption, txpos, txcol, bgcol)
-		self._action = action
-		self._args = args
 	end,
 	
 	draw = function(self, monitor)
@@ -25,13 +23,18 @@ local Button = Class:extend{
 		self._text:draw(monitor)
 	end,
 	
+	setAction = function(method, ...)
+		-- Args could include self => impossible in constructor
+		self._action = method
+		self._args = {...}
+	end,
+	
 	click = function(self)
-		local action = self._action
-		if type(action) == "function" then
+		if type(self._action) == "function" then
 			if self._args == nil then
-				action()
+				self._action()
 			else
-				action(unpack(self._args))
+				self._action(unpack(self._args))
 			end
 		end
 	end
