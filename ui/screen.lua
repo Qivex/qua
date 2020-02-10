@@ -5,17 +5,13 @@ local Window = require "qua.ui.drawables.window"
 
 -- IMPLEMENTATION
 local Screen = Class:extend{
-	new = function(self)
+	new = function(self)	-- TODO: Support for not-fullscreen
 		self._static = {}
 		self._dynamic = {}
 	end,
 	
 	setDisplay = function(self, display)
 		self._display = display
-		-- No shared Screens between Displays - new background on change
-		local static_window = Window({1,1}, {display:getSize()})
-		self:addDynamic(static_window)
-		self._background = static_window:getFakeMonitor()
 	end,
 	
 	addStatic = function(self, drawable)
@@ -34,6 +30,12 @@ local Screen = Class:extend{
 	end,
 	
 	draw = function(self, monitor)
+		-- Initialize background
+		if not self._background then
+			local static_window = Window({1,1}, {monitor.getSize()})
+			self:addDynamic(static_window)
+			self._background = static_window:getFakeMonitor()
+		end
 		-- Draw newly added statics onto background
 		for _, drawable in pairs(self._static) do
 			drawable:draw(self._background)
