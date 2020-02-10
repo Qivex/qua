@@ -30,13 +30,16 @@ local Screen = Class:extend{
 		if not self._display then
 			error("Can't render screen without display!", 2)
 		end
+		self:draw(self._display:getMonitor)
+	end,
+	
+	draw = function(self, monitor)
 		-- Draw newly added statics onto background
 		for _, drawable in pairs(self._static) do
 			drawable:draw(self._background)
 		end
 		self._static = {}	-- ... only once
 		-- Call all dynamic draw-functions
-		local monitor = self._display:getMonitor()
 		for _, drawable in pairs(self._dynamic) do
 			drawable:draw(monitor)
 		end
