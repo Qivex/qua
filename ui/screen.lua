@@ -5,13 +5,11 @@ local Window = require "qua.ui.drawables.window"
 
 -- IMPLEMENTATION
 local Screen = Class:extend{
-	new = function(self)	-- TODO: Support for not-fullscreen
+	new = function(self, pos, size)	-- TODO: Support for not-fullscreen
+		self._pos = pos,
+		self._size = size
 		self._static = {}
 		self._dynamic = {}
-	end,
-	
-	setDisplay = function(self, display)
-		self._display = display
 	end,
 	
 	addStatic = function(self, drawable)
@@ -22,19 +20,12 @@ local Screen = Class:extend{
 		table.insert(self._dynamic, drawable)
 	end,
 	
-	render = function(self)
-		if not self._display then
-			error("Can't render screen without display!", 2)
-		end
-		self:draw(self._display:getMonitor())
-	end,
-	
 	draw = function(self, monitor)
 		-- Initialize background
 		if not self._background then
-			local static_window = Window({1,1}, {monitor.getSize()})
-			self:addDynamic(static_window)
-			self._background = static_window:getFakeMonitor()
+			local bg_window = Window(self._pos, self._size)
+			self._background = bg_window:getFakeMonitor()
+			self:addDynamic(bg_window)	-- Draw background first
 		end
 		-- Draw newly added statics onto background
 		for _, drawable in pairs(self._static) do
@@ -45,6 +36,20 @@ local Screen = Class:extend{
 		for _, drawable in pairs(self._dynamic) do
 			drawable:draw(monitor)
 		end
+	end,
+	
+	setDisplay = function(self, display)
+		self._display = display
+		-- Fullscreen
+		self._pos = {1, 1}
+		self._size = {monitor.getSize()}
+	end,
+	
+	render = function(self)
+		if not self._display then
+			error("Can't render screen without display!", 2)
+		end
+		self:draw(self._display:getMonitor())
 	end,
 	
 	click = function(self, x, y)
