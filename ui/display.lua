@@ -1,5 +1,6 @@
 -- IMPORT
 local Class = require "qua.core.class"
+local Screen = require "qua.core.screen"
 
 
 -- IMPLEMENTATION
@@ -30,6 +31,12 @@ local Display = Class:extend{
 		mon.setBackgroundColor(colors.black)
 		mon.clear()
 		mon.setCursorPos(1, 1)
+	end,
+	
+	getNewScreen = function(self)
+		local screen = Screen({1,1}, self._monitor.getSize())
+		screen:setDisplay(self)
+		return screen
 	end,
 	
 	addScreen = function(self, name, screen)

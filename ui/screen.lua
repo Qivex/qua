@@ -5,7 +5,7 @@ local Window = require "qua.ui.drawables.window"
 
 -- IMPLEMENTATION
 local Screen = Class:extend{
-	new = function(self, pos, size)	-- TODO: Support for not-fullscreen
+	new = function(self, pos, size)
 		self._pos = pos
 		self._size = size
 		self._static = {}
@@ -45,9 +45,6 @@ local Screen = Class:extend{
 	
 	setDisplay = function(self, display)
 		self._display = display
-		-- Fullscreen (soon redundant)
-		self._pos = {1, 1}
-		self._size = {display:getMonitor().getSize()}
 	end,
 	
 	render = function(self)
