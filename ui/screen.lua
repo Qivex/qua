@@ -30,7 +30,7 @@ local Screen = Class:extend{
 		if not self._display then
 			error("Can't render screen without display!", 2)
 		end
-		self:draw(self._display:getMonitor)
+		self:draw(self._display:getMonitor())
 	end,
 	
 	draw = function(self, monitor)
