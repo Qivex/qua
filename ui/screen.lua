@@ -10,6 +10,12 @@ local Screen = Class:extend{
 		self._size = size
 		self._static = {}
 		self._dynamic = {}
+		-- Initialize windows
+		self._back_window = Window({1, 1}, self._size)
+		self._main_window = Window(self._pos, self._size)
+		self._background = self._back_window:getFakeMonitor()
+		self._foreground = self._main_window:getFakeMonitor()
+		self:addDynamic(self._back_window)
 	end,
 	
 	getSize = function(self)
@@ -25,15 +31,6 @@ local Screen = Class:extend{
 	end,
 	
 	draw = function(self, monitor)
-		-- Initialize windows
-		if #self._dynamic == 0 then
-			self._back_window = Window({1, 1}, self._size)
-			self._main_window = Window(self._pos, self._size)
-			self._background = self._back_window:getFakeMonitor()
-			self._foreground = self._main_window:getFakeMonitor()
-			-- Draw background first
-			self:addDynamic(self._back_window)
-		end
 		-- Draw newly added statics onto background
 		for _, drawable in pairs(self._static) do
 			drawable:draw(self._background)
