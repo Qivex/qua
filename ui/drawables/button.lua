@@ -6,6 +6,8 @@ local Text = require "qua.ui.drawables.text"
 
 -- IMPLEMENTATION
 local Button = Drawable:extend{
+	_clickable = true,
+	
 	new = function(self, caption, pos, size, txcol, bgcol)
 		self._box = Box(pos, size, bgcol)
 		-- Calculate position of text
@@ -29,12 +31,16 @@ local Button = Drawable:extend{
 		self._args = {...}
 	end,
 	
-	click = function(self)
-		if type(self._action) == "function" then
-			if self._args == nil then
-				self._action()
-			else
-				self._action(unpack(self._args))
+	click = function(self, x, y)
+		local w, h = self._box:getSize()
+		local pos_x, pos_y = self._box:getPos()
+		if pos_x <= x and x < pos_x + w and pos_y <= y and y < pos_y + h then
+			if type(self._action) == "function" then
+				if self._args == nil then
+					self._action()
+				else
+					self._action(unpack(self._args))
+				end
 			end
 		end
 	end
