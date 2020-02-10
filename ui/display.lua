@@ -34,9 +34,7 @@ local Display = Class:extend{
 	end,
 	
 	getNewScreen = function(self)
-		local screen = Screen({1,1}, {self._monitor.getSize()})
-		screen:setDisplay(self)
-		return screen
+		return Screen({1,1}, {self:getMonitor().getSize()})
 	end,
 	
 	addScreen = function(self, name, screen)
@@ -44,7 +42,6 @@ local Display = Class:extend{
 			error("This display already has a screen called'" .. name .. "'!", 2)
 		end
 		self._screens[name] = screen
-		screen:setDisplay(self)
 	end,
 	
 	getScreen = function(self, name, screen)
@@ -70,7 +67,7 @@ local Display = Class:extend{
 		if screen then
 			screen:draw(self:getMonitor())
 		end
-	end
+	end,
 	
 	click = function(self, x, y)
 		local screen = self:getCurrentScreen()
