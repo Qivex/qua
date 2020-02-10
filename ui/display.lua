@@ -61,9 +61,16 @@ local Display = Class:extend{
 	selectScreen = function(self, name)
 		local screen = self:getScreen(name)
 		self._activeScreen = screen
-		self:clear()
-		screen:render()
+		self:update()
 	end,
+	
+	update = function(self)
+		self:clear()
+		local screen = self:getCurrentScreen()
+		if screen then
+			screen:draw(self:getMonitor())
+		end
+	end
 	
 	click = function(self, x, y)
 		local screen = self:getCurrentScreen()

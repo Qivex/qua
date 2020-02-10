@@ -12,6 +12,10 @@ local Screen = Class:extend{
 		self._dynamic = {}
 	end,
 	
+	getSize = function(self)
+		return unpack(self._size)
+	end,
+	
 	addStatic = function(self, drawable)
 		table.insert(self._static, drawable)
 	end,
@@ -41,17 +45,6 @@ local Screen = Class:extend{
 		end
 		-- Draw window
 		self._main_window:draw(monitor)
-	end,
-	
-	setDisplay = function(self, display)
-		self._display = display
-	end,
-	
-	render = function(self)
-		if not self._display then
-			error("Can't render screen without display!", 2)
-		end
-		self:draw(self._display:getMonitor())
 	end,
 	
 	click = function(self, x, y)
