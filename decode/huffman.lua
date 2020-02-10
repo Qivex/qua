@@ -60,16 +60,6 @@ local HuffmanTree = Class:extend{
 			return result
 		end
 		return false
-	end,
-	
-	findNextSymbolIn = function(self, bitstream)	-- TODO: Maybe Not here (depends on BitStream) -> Local Func at Deflate
-		local code = ""
-		-- read bits from stream until valid code
-		repeat
-			code = code .. bitstream:bits(1)
-			decoded = self:decode(code)
-		until decoded
-		return decoded
 	end
 }
 

@@ -2,7 +2,7 @@
 
 -- IMPORT
 local Class = require "qua.core.class"
-local BitStream = require "qua.core.bitstream"
+local BitArray = require "qua.core.bitarray"
 local HuffmanTree = require "qua.decode.huffman"
 
 
@@ -34,9 +34,19 @@ FIXED_DISTANCE_TREE:fromLengths(fdt_len)
 
 
 -- IMPLEMENTATION
+local searchNextCode = function(tree, array)
+	local code = ""
+	-- read bits until valid code
+	repeat
+		code = code .. array:nextInt(1)
+		decoded = tree:decode(code)
+	until decoded
+	return decoded
+end
+
 local DeflateBlock = Class:extend{	
-	new = function(self, stream)
-		self._stream = stream
+	new = function(self, bitarray)
+		self._bitarray = bitarray
 	end,
 	
 	setOutput = function(self, output)
@@ -44,10 +54,10 @@ local DeflateBlock = Class:extend{
 	end,
 	
 	deflate = function(self)
-		local stream = self._stream
+		local bits = self._bitarray
 		-- Read block-header
-		self._last = stream:bits(1, true)
-		local blocktype = stream:bits(2, true)
+		self._last = bits:nextInt(1, true)
+		local blocktype = bits:nextInt(2, true)
 		print(blocktype)
 		-- Select required decoding method
 		if blocktype == 0 then
@@ -67,15 +77,15 @@ local DeflateBlock = Class:extend{
 	
 	_stored = function(self)
 		print("Stored block (currently untested)")
-		local stream = self._stream
+		local bits = self._bitarray
 		-- Skip to next byte boundary
-		stream:clearBuffer()	
+		bits:skip()
 		-- Read LEN & NLEN
-		local LEN = stream:bits(16, true)
-		local NLEN = stream:bits(16, true)
+		local LEN = bits:nextInt(16, true)
+		local NLEN = bits:nextInt(16, true)
 		-- Copy bytes
 		for i=1, LEN do
-			table.insert(self._output, stream:bits(8, true))
+			table.insert(self._output, bits:nextInt(8, true))
 		end
 	end,
 	
@@ -84,16 +94,16 @@ local DeflateBlock = Class:extend{
 	end,
 	
 	_dynamic = function(self)
-		local stream = self._stream
+		local bits = self._bitarray
 		-- Read info of dynamic trees
-		local HLIT   = stream:bits(5, true)
-		local HCDIST = stream:bits(5, true)
-		local HCLEN  = stream:bits(4, true)
+		local HLIT   = bits:nextInt(5, true)
+		local HCDIST = bits:nextInt(5, true)
+		local HCLEN  = bits:nextInt(4, true)
 		-- Read lengths for code-length tree
 		local clt_len = {}
 		for i, symbol in pairs(CODE_LENGTH_SYMBOL_ORDER) do
 			if i <= (HCLEN + 4) then
-				clt_len[symbol] = stream:bits(3, true)
+				clt_len[symbol] = bits:nextInt(3, true)
 			end
 		end
 		-- Build code-length tree
@@ -103,7 +113,7 @@ local DeflateBlock = Class:extend{
 		local seq_len = {}	-- Sequential lengths (of both trees)
 		local index = 0
 		while index < (HLIT + 257) + (HCDIST + 1) do
-			local symbol = codeLengthTree:findNextSymbolIn(stream)
+			local symbol = searchNextCode(codeLengthTree, bits)
 			if symbol < 16 then	-- Length value
 				local length = symbol
 				seq_len[index] = length
@@ -112,11 +122,11 @@ local DeflateBlock = Class:extend{
 				local length, repetitions = 0, 0
 				if symbol == 16 then
 					length = seq_len[index - 1]
-					repetitions = stream:bits(2, true) + 3
+					repetitions = bits:nextInt(2, true) + 3
 				elseif symbol == 17 then
-					repetitions = stream:bits(3, true) + 3
+					repetitions = bits:nextInt(3, true) + 3
 				elseif symbol == 18 then
-					repetitions = stream:bits(7, true) + 11
+					repetitions = bits:nextInt(7, true) + 11
 				end
 				while repetitions > 0 do
 					seq_len[index] = length
@@ -144,18 +154,18 @@ local DeflateBlock = Class:extend{
 	end,
 	
 	_internalDeflate = function(self, literalTree, distanceTree)
-		local stream = self._stream
+		local bits = self._bitarray
 		repeat
-			local symbol = literalTree:findNextSymbolIn(stream)
+			local symbol = searchNextCode(literalTree, bits)
 			if symbol < 256 then		-- Literal
 				-- Insert literal value
 				table.insert(self._output, symbol)
 			elseif symbol > 256 then	-- Copy
-				-- Read missing information from stream
+				-- Read missing information
 				local length_symbol = symbol
-				local length_extra = stream:bits(LENGTH_EXTRA_BITS[length_symbol - 256], true) or 0	-- Read length extra bits (0-5)
-				local dist_symbol = distanceTree:findNextSymbolIn(stream)							-- Read distance symbol
-				local dist_extra = stream:bits(DISTANCE_EXTRA_BITS[dist_symbol + 1], true) or 0		-- Read distance extra bits (0-13)
+				local length_extra = bits:nextInt(LENGTH_EXTRA_BITS[length_symbol - 256], true) or 0	-- Read length extra bits (0-5)
+				local dist_symbol = searchNextCode(distanceTree, bits)									-- Read distance symbol
+				local dist_extra = bits:nextInt(DISTANCE_EXTRA_BITS[dist_symbol + 1], true) or 0		-- Read distance extra bits (0-13)
 				-- Calculate real length & distance
 				local length = LENGTH_OFFSET[length_symbol - 256] + length_extra
 				local distance = DISTANCE_OFFSET[dist_symbol + 1] + dist_extra
@@ -174,10 +184,11 @@ local DeflateBlock = Class:extend{
 }
 
 local deflate = function(input)
-	local stream = BitStream(input, "little")
-	local output = {}	-- Array of bytes (as ints)
+	local bits = BitArray("little")
+	bits:fromHex(input)
+	local output = {}	-- Array of int bytes
 	repeat
-		local block = DeflateBlock(stream)
+		local block = DeflateBlock(bits)
 		block:setOutput(output)
 		block:deflate()
 	until block:isLast()
