@@ -6,7 +6,7 @@ local Window = require "qua.ui.drawables.window"
 -- IMPLEMENTATION
 local Screen = Class:extend{
 	new = function(self, pos, size)	-- TODO: Support for not-fullscreen
-		self._pos = pos,
+		self._pos = pos
 		self._size = size
 		self._static = {}
 		self._dynamic = {}
@@ -21,11 +21,14 @@ local Screen = Class:extend{
 	end,
 	
 	draw = function(self, monitor)
-		-- Initialize background
-		if not self._background then
-			local bg_window = Window(self._pos, self._size)
-			self._background = bg_window:getFakeMonitor()
-			self:addDynamic(bg_window)	-- Draw background first
+		-- Initialize windows
+		if #self._dynamic == 0 then
+			self._back_window = Window({1, 1}, self._size)
+			self._main_window = Window(self._pos, self._size)
+			self._background = self._back_window:getFakeMonitor()
+			self._foreground = self._main_window:getFakeMonitor()
+			-- Draw background first
+			self:addDynamic(self._back_window)
 		end
 		-- Draw newly added statics onto background
 		for _, drawable in pairs(self._static) do
@@ -34,15 +37,17 @@ local Screen = Class:extend{
 		self._static = {}	-- ... only once
 		-- Call all dynamic draw-functions
 		for _, drawable in pairs(self._dynamic) do
-			drawable:draw(monitor)
+			drawable:draw(self._foreground)
 		end
+		-- Draw window
+		self._main_window:draw(monitor)
 	end,
 	
 	setDisplay = function(self, display)
 		self._display = display
-		-- Fullscreen
+		-- Fullscreen (soon redundant)
 		self._pos = {1, 1}
-		self._size = {monitor.getSize()}
+		self._size = {display:getMonitor().getSize()}
 	end,
 	
 	render = function(self)
