@@ -40,15 +40,17 @@ local Screen = Drawable:extend{
 	end,
 	
 	draw = function(self, monitor)
+		local fg, bg = self._foreground, self._background
 		-- Draw newly added statics onto background
 		for _, drawable in pairs(self._static) do
-			drawable:draw(self._background)
-			-- add to clickables
+			drawable:draw(bg)
 		end
 		self._static = {}	-- ... only once
 		-- Call all dynamic draw-functions
+		fg.setBackgroundColor(colors.black)
+		fg.clear()
 		for _, drawable in pairs(self._dynamic) do
-			drawable:draw(self._foreground)
+			drawable:draw(fg)
 		end
 		-- Draw window
 		self._main_window:draw(monitor)
@@ -60,7 +62,7 @@ local Screen = Drawable:extend{
 		if pos_x <= x and x < pos_x + w and pos_y <= y and y < pos_y + h then
 			-- Notify all Clickables (only they know their click-area)
 			for _, clickable in pairs(self._clickable) do
-				clickable:click(x, y)
+				clickable:click(x - pos_x + 1, y - pos_y + 1)
 			end
 		end
 	end
