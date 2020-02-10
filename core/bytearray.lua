@@ -51,6 +51,7 @@ local ByteArray = Class:extend{
 	end,
 	
 	sub = function(self, start, stop)
+		stop = stop or #self._bytes
 		if type(start) ~= "number" or type(stop) ~= "number" then
 			error("Expected number, number", 2)
 		end
