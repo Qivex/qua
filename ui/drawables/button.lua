@@ -1,11 +1,11 @@
 -- IMPORT
-local Class = require "qua.core.class"
-local Box = require "qua.ui.drawable.box"
-local Text = require "qua.ui.drawable.text"
+local Drawable = require "qua.ui.drawable"
+local Box = require "qua.ui.drawables.box"
+local Text = require "qua.ui.drawables.text"
 
 
 -- IMPLEMENTATION
-local Button = Class:extend{
+local Button = Drawable:extend{
 	new = function(self, caption, pos, size, txcol, bgcol)
 		self._box = Box(pos, size, bgcol)
 		-- Calculate position of text

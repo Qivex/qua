@@ -1,6 +1,6 @@
 -- IMPORT
 local Class = require "qua.core.class"
-local Window = require "qua.ui.drawable.window"
+local Window = require "qua.ui.drawables.window"
 
 
 -- IMPLEMENTATION
@@ -39,6 +39,13 @@ local Screen = Class:extend{
 		local monitor = self._display:getMonitor()
 		for _, drawable in pairs(self._dynamic) do
 			drawable:draw(monitor)
+		end
+	end,
+	
+	click = function(self, x, y)
+		for _, drawable in pairs(self._dynamic) do
+			-- if clickable
+				-- drawable:click(x, y) -- only drawable itself can know when it should react
 		end
 	end
 }

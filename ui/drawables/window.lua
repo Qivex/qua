@@ -1,5 +1,5 @@
 -- IMPORT
-local Class = require "qua.core.class"
+local Drawable = require "qua.ui.drawable"
 
 
 -- IMPLEMENTATION
@@ -12,7 +12,7 @@ local validateColor = function(color)
 	end
 end
 
-local Window = Class:extend{
+local Window = Drawable:extend{
 	new = function(self, pos, size)
 		self._pos_x = pos[1]
 		self._pos_y = pos[2]

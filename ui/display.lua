@@ -56,6 +56,13 @@ local Display = Class:extend{
 		self._activeScreen = screen
 		self:clear()
 		screen:render()
+	end,
+	
+	click = function(self, x, y)
+		local screen = self:getCurrentScreen()
+		if screen ~= nil then
+			screen:click(x, y)
+		end
 	end
 }
 

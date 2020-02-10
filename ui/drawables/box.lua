@@ -1,9 +1,9 @@
 -- IMPORT
-local Class = require "qua.core.class" 
+local Drawable = require "qua.ui.drawable" 
 
 
 -- IMPLEMENTATION
-local Box = Class:extend{
+local Box = Drawable:extend{
 	new = function(self, pos, size, color)
 		self:setPos(pos)
 		self:setSize(size)
