@@ -1,15 +1,18 @@
 -- IMPORT
-local Class = require "qua.core.class"
+local Drawable = require "qua.ui.drawable"
 local Window = require "qua.ui.drawables.window"
 
 
 -- IMPLEMENTATION
-local Screen = Class:extend{
+local Screen = Drawable:extend{
+	_clickable = true,
+	
 	new = function(self, pos, size)
 		self._pos = pos
 		self._size = size
 		self._static = {}
 		self._dynamic = {}
+		self._clickable = {}
 		-- Initialize windows
 		self._back_window = Window({1, 1}, self._size)
 		self._main_window = Window(self._pos, self._size)
@@ -24,16 +27,23 @@ local Screen = Class:extend{
 	
 	addStatic = function(self, drawable)
 		table.insert(self._static, drawable)
+		if drawable:isClickable() then
+			table.insert(self._clickable, drawable)
+		end
 	end,
 	
 	addDynamic = function(self, drawable)
 		table.insert(self._dynamic, drawable)
+		if drawable:isClickable() then
+			table.insert(self._clickable, drawable)
+		end
 	end,
 	
 	draw = function(self, monitor)
 		-- Draw newly added statics onto background
 		for _, drawable in pairs(self._static) do
 			drawable:draw(self._background)
+			-- add to clickables
 		end
 		self._static = {}	-- ... only once
 		-- Call all dynamic draw-functions
@@ -45,9 +55,8 @@ local Screen = Class:extend{
 	end,
 	
 	click = function(self, x, y)
-		for _, drawable in pairs(self._dynamic) do
-			-- if clickable
-				-- drawable:click(x, y) -- only drawable itself can know when it should react
+		for _, clickable in pairs(self._clickable) do
+			clickable:click(x, y) -- only drawable itself can know when it should react
 		end
 	end
 }

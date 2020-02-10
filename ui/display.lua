@@ -39,7 +39,7 @@ local Display = Class:extend{
 	
 	addScreen = function(self, name, screen)
 		if self._screens[name] ~= nil then
-			error("This display already has a screen called'" .. name .. "'!", 2)
+			error("This display already has a screen called '" .. name .. "'!", 2)
 		end
 		self._screens[name] = screen
 	end,
