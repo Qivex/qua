@@ -44,7 +44,7 @@ local searchNextCode = function(tree, array)
 	return decoded
 end
 
-local DeflateBlock = Class:extend{	
+local InflateBlock = Class:extend{
 	new = function(self, bitarray)
 		self._bitarray = bitarray
 	end,
@@ -53,7 +53,7 @@ local DeflateBlock = Class:extend{
 		self._output = output
 	end,
 	
-	deflate = function(self)
+	inflate = function(self)
 		local bits = self._bitarray
 		-- Read block-header
 		self._last = bits:nextInt(1, true)
@@ -90,7 +90,7 @@ local DeflateBlock = Class:extend{
 	end,
 	
 	_fixed = function(self)
-		self:_internalDeflate(FIXED_LITERAL_TREE, FIXED_DISTANCE_TREE)
+		self:_internalInflate(FIXED_LITERAL_TREE, FIXED_DISTANCE_TREE)
 	end,
 	
 	_dynamic = function(self)
@@ -150,10 +150,10 @@ local DeflateBlock = Class:extend{
 		local distanceTree = HuffmanTree()
 		distanceTree:fromLengths(dist_len)
 		-- Decode
-		self:_internalDeflate(literalTree, distanceTree)
+		self:_internalInflate(literalTree, distanceTree)
 	end,
 	
-	_internalDeflate = function(self, literalTree, distanceTree)
+	_internalInflate = function(self, literalTree, distanceTree)
 		local bits = self._bitarray
 		repeat
 			local symbol = searchNextCode(literalTree, bits)
@@ -183,18 +183,20 @@ local DeflateBlock = Class:extend{
 	end
 }
 
-local deflate = function(input)
+local inflate = function(input)
 	local bits = BitArray("little")
 	bits:fromHex(input)
 	local output = {}	-- Array of int bytes
 	repeat
-		local block = DeflateBlock(bits)
+		local block = InflateBlock(bits)
 		block:setOutput(output)
-		block:deflate()
+		block:inflate()
 	until block:isLast()
 	return output
 end
 
 
 -- EXPORT
-return deflate
+return {
+	decode = inflate
+}
