@@ -34,7 +34,7 @@ local Display = Class:extend{
 	end,
 	
 	getNewScreen = function(self)
-		local screen = Screen({1,1}, self._monitor.getSize())
+		local screen = Screen({1,1}, {self._monitor.getSize()})
 		screen:setDisplay(self)
 		return screen
 	end,
