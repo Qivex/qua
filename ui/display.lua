@@ -1,6 +1,6 @@
 -- IMPORT
 local Class = require "qua.core.class"
-local Screen = require "qua.core.screen"
+local Screen = require "qua.ui.screen"
 
 
 -- IMPLEMENTATION
