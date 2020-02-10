@@ -55,7 +55,7 @@ local Screen = Drawable:extend{
 	end,
 	
 	click = function(self, x, y)
-		local w,h = self:getSize()
+		local w, h = self:getSize()
 		local pos_x, pos_y = unpack(self._pos)
 		if pos_x <= x and x < pos_x + w and pos_y <= y and y < pos_y + h then
 			-- Notify all Clickables (only they know their click-area)
