@@ -15,8 +15,8 @@ local Button = Drawable:extend{
 	end,
 	
 	_centerText = function(self)
-		local x, y = unpack(self._box:getPos())
-		local w, h = unpack(self._box:getSize())
+		local x, y = self._box:getPos()
+		local w, h = self._box:getSize()
 		local length = string.len(self._text:getText())
 		self._text:setPos({
 			x + math.floor((w - length) / 2),
