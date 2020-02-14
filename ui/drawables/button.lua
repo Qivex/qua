@@ -10,19 +10,42 @@ local Button = Drawable:extend{
 	
 	new = function(self, caption, pos, size, txcol, bgcol)
 		self._box = Box(pos, size, bgcol)
-		-- Calculate position of text
-		local x, y = self._box:getPos()
-		local w, h = self._box:getSize()
-		local txpos = {
-			x + math.floor((w - string.len(caption or "")) / 2),
-			y + math.floor((h - 1) / 2)
-		}
-		self._text = Text(caption, txpos, txcol, bgcol)
+		self._text = Text(caption, pos, txcol, bgcol)
+		self:_centerText()
 	end,
 	
-	draw = function(self, monitor)
-		self._box:draw(monitor)
-		self._text:draw(monitor)
+	_centerText = function(self)
+		local x, y = unpack(self._box:getPos())
+		local w, h = unpack(self._box:getSize())
+		local length = string.len(self._text:getText())
+		self._text:setPos({
+			x + math.floor((w - length) / 2),
+			y + math.floor((h - 1) / 2)
+		})
+	end,
+	
+	setCaption = function(self, caption)
+		self._text:setText(caption)
+		self:_centerText()
+	end,
+	
+	setPos = function(self, pos)
+		self._box:setPos(pos)
+		self:_centerText()
+	end,
+	
+	setSize = function(self, size)
+		self._box:setSize(size)
+		self:_centerText()
+	end,
+	
+	setTextColor = function(self, color)
+		self._text:setTextColor(color)
+	end,
+	
+	setBackgroundColor = function(self, color)
+		self._box:setColor(color)
+		self._text:setBackgroundColor(color)
 	end,
 	
 	setAction = function(self, method, ...)
@@ -31,10 +54,15 @@ local Button = Drawable:extend{
 		self._args = {...}
 	end,
 	
-	click = function(self, x, y)
+	draw = function(self, monitor)
+		self._box:draw(monitor)
+		self._text:draw(monitor)
+	end,
+	
+	click = function(self, click_x, click_y)
 		local w, h = self._box:getSize()
-		local pos_x, pos_y = self._box:getPos()
-		if pos_x <= x and x < pos_x + w and pos_y <= y and y < pos_y + h then
+		local x, y = self._box:getPos()
+		if x <= click_x and click_x < x + w and y <= click_y and click_y < y + h then
 			if type(self._action) == "function" then
 				if self._args == nil then
 					self._action()
