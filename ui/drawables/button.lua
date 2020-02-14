@@ -29,9 +29,17 @@ local Button = Drawable:extend{
 		self:_centerText()
 	end,
 	
+	getCaption = function(self)
+		return self._text:getText()
+	end,
+	
 	setPos = function(self, pos)
 		self._box:setPos(pos)
 		self:_centerText()
+	end,
+	
+	getPos = function(self)
+		return self._box:getPos()
 	end,
 	
 	setSize = function(self, size)
@@ -39,13 +47,25 @@ local Button = Drawable:extend{
 		self:_centerText()
 	end,
 	
+	getSize = function(self)
+		return self._box:getSize()
+	end,
+	
 	setTextColor = function(self, color)
 		self._text:setTextColor(color)
+	end,
+	
+	getTextColor = function(self)
+		return self._text:getTextColor()
 	end,
 	
 	setBackgroundColor = function(self, color)
 		self._box:setColor(color)
 		self._text:setBackgroundColor(color)
+	end,
+	
+	getBackgroundColor = function(self)
+		return self._text:getBackgroundColor()
 	end,
 	
 	setAction = function(self, method, ...)
