@@ -12,7 +12,8 @@ Its main goal is to replace the now outdated [Lycodon-API][1] and improve usabil
 ### Notable features (to be expanded):
 - `require`-function (**not** included in CC)
 - Prototype based object-orientation
-- Decoding of common binary file formats (zip & images) for use in CC
+- Simple UI with support for multiple views per monitor & nested screens
+- Decoding of common binary file formats (zlib & images) for use in CC
 
 
 ## Setup
@@ -21,7 +22,7 @@ Its main goal is to replace the now outdated [Lycodon-API][1] and improve usabil
 	- Script to download all files on [Pastebin][2]
 2. Include the following command in your startup:
 ```
-shell.run("apis/qua/core/require")
+shell.run("apis/qua/require")
 ```
 3. Import modules using `require`:
 ```
@@ -30,17 +31,18 @@ local Class = require "qua.core.class"
 
 
 ## Modules
-|Module	|Description				|Notes (Current state)					|
-|---	|---						|---									|
-|core	|Important core features	|Used by most other modules				|
-|math	|Small helper functions		|Convert bytes into hex/bin/string		|
-|decode	|File formats & protocols	|Compression (zlib), file formats (PNG)	|
-|crypt	|Checksums & encryption		|CRC, Adler32							|
+|Module	|Description					|Notes (Current state)						|
+|---	|---							|---										|
+|core	|Important core features		|Used by most other modules					|
+|ui		|Everything drawn on a monitor	|Screen-change, buttons & basic Drawables	|
+|math	|Small helper functions			|Convert bytes into hex/bin/string			|
+|decode	|File formats & protocols		|Compression (zlib), file formats (PNG)		|
+|crypt	|Checksums & encryption			|CRC, Adler32								|
 
 
 ## ToDo:
 - Download-Helper to download entire repo (vs. `http.get()` for every file)
-- More modules (especially GUI-features from first Lycodon-API)
+- Finish modules
 - Complete documentation for each module
 - Basic examples
 
