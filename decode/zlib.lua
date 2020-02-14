@@ -9,10 +9,10 @@ local decode = function(input)
 	local header = BitArray(true)
 	header:fromHex(input:sub(1, 4))
 	-- Analyze header
-	local method = header:nextInt(4, true)
-	local window = header:nextInt(4, true)
-	header:nextInt(5, true)	-- check-bytes
-	local dict = header:nextInt(1)
+	local method = header:nextAsInt(4, true)
+	local window = header:nextAsInt(4, true)
+	header:nextAsInt(5, true)	-- check-bytes
+	local dict = header:nextAsInt(1)
 	if method ~= 8 then
 		error("Undefined compression method '" .. method .. "', only deflate (8) allowed.", 2)
 	end
@@ -30,7 +30,7 @@ local decode = function(input)
 	local output = deflate.decode(input:sub(start, -9))
 	-- Validate output using Adler32
 	local checkbytes = ByteArray()
-	checkbytes:fromArray(output)
+	checkbytes:fromBytes(output)
 	local s1, s2 = 1, 0
 	for i=1, #output do
 		s1 = (s1 + checkbytes:next()[1]) % 65521

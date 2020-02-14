@@ -38,7 +38,7 @@ local searchNextCode = function(tree, array)
 	local code = ""
 	-- read bits until valid code
 	repeat
-		code = code .. array:nextInt(1)
+		code = code .. array:nextAsInt(1)
 		decoded = tree:decode(code)
 	until decoded
 	return decoded
@@ -56,8 +56,8 @@ local InflateBlock = Class:extend{
 	inflate = function(self)
 		local bits = self._bitarray
 		-- Read block-header
-		self._last = bits:nextInt(1, true)
-		local blocktype = bits:nextInt(2, true)
+		self._last = bits:nextAsInt(1, true)
+		local blocktype = bits:nextAsInt(2, true)
 		print(blocktype)
 		-- Select required decoding method
 		if blocktype == 0 then
@@ -81,11 +81,11 @@ local InflateBlock = Class:extend{
 		-- Skip to next byte boundary
 		bits:skip()
 		-- Read LEN & NLEN
-		local LEN = bits:nextInt(16, true)
-		local NLEN = bits:nextInt(16, true)
+		local LEN = bits:nextAsInt(16, true)
+		local NLEN = bits:nextAsInt(16, true)
 		-- Copy bytes
 		for i=1, LEN do
-			table.insert(self._output, bits:nextInt(8, true))
+			table.insert(self._output, bits:nextAsInt(8, true))
 		end
 	end,
 	
@@ -96,14 +96,14 @@ local InflateBlock = Class:extend{
 	_dynamic = function(self)
 		local bits = self._bitarray
 		-- Read info of dynamic trees
-		local HLIT   = bits:nextInt(5, true)
-		local HCDIST = bits:nextInt(5, true)
-		local HCLEN  = bits:nextInt(4, true)
+		local HLIT   = bits:nextAsInt(5, true)
+		local HCDIST = bits:nextAsInt(5, true)
+		local HCLEN  = bits:nextAsInt(4, true)
 		-- Read lengths for code-length tree
 		local clt_len = {}
 		for i, symbol in pairs(CODE_LENGTH_SYMBOL_ORDER) do
 			if i <= (HCLEN + 4) then
-				clt_len[symbol] = bits:nextInt(3, true)
+				clt_len[symbol] = bits:nextAsInt(3, true)
 			end
 		end
 		-- Build code-length tree
@@ -122,11 +122,11 @@ local InflateBlock = Class:extend{
 				local length, repetitions = 0, 0
 				if symbol == 16 then
 					length = seq_len[index - 1]
-					repetitions = bits:nextInt(2, true) + 3
+					repetitions = bits:nextAsInt(2, true) + 3
 				elseif symbol == 17 then
-					repetitions = bits:nextInt(3, true) + 3
+					repetitions = bits:nextAsInt(3, true) + 3
 				elseif symbol == 18 then
-					repetitions = bits:nextInt(7, true) + 11
+					repetitions = bits:nextAsInt(7, true) + 11
 				end
 				while repetitions > 0 do
 					seq_len[index] = length
@@ -163,9 +163,9 @@ local InflateBlock = Class:extend{
 			elseif symbol > 256 then	-- Copy
 				-- Read missing information
 				local length_symbol = symbol
-				local length_extra = bits:nextInt(LENGTH_EXTRA_BITS[length_symbol - 256], true) or 0	-- Read length extra bits (0-5)
+				local length_extra = bits:nextAsInt(LENGTH_EXTRA_BITS[length_symbol - 256], true) or 0	-- Read length extra bits (0-5)
 				local dist_symbol = searchNextCode(distanceTree, bits)									-- Read distance symbol
-				local dist_extra = bits:nextInt(DISTANCE_EXTRA_BITS[dist_symbol + 1], true) or 0		-- Read distance extra bits (0-13)
+				local dist_extra = bits:nextAsInt(DISTANCE_EXTRA_BITS[dist_symbol + 1], true) or 0		-- Read distance extra bits (0-13)
 				-- Calculate real length & distance
 				local length = LENGTH_OFFSET[length_symbol - 256] + length_extra
 				local distance = DISTANCE_OFFSET[dist_symbol + 1] + dist_extra
