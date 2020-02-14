@@ -11,7 +11,7 @@ local BitArray = Class:extend{
 		self._pointer = 1
 	end,
 	
-	fromArray = function(self, array)
+	fromBits = function(self, array)
 		if type(array) ~= "table" then
 			error("Expected array.", 2)
 		end
@@ -74,7 +74,7 @@ local BitArray = Class:extend{
 		return result
 	end,
 	
-	nextInt = function(self, count, reversed)
+	nextAsInt = function(self, count, reversed)
 		local bits = self:next(count, reversed)
 		return tonumber(table.concat(bits, ""), 2)
 	end,
@@ -82,6 +82,11 @@ local BitArray = Class:extend{
 	skip = function(self)
 		-- Skip to next byte-border
 		self._buffer = {}
+	end,
+	
+	reset = function(self)
+		self._buffer = {}
+		self._pointer = 1
 	end
 }
 

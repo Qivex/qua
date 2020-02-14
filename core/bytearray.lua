@@ -13,7 +13,6 @@ local ByteArray = Class:extend{
 		end
 	end,
 	
-	-- From
 	fromBytes = function(self, bytes)
 		if type(bytes) ~= "table" then
 			error("Expected array.", 2)
@@ -45,7 +44,6 @@ local ByteArray = Class:extend{
 		end
 	end,
 	
-	-- To
 	toHex = function(self, bytes)
 		bytes = bytes or self._bytes
 		local symbols = "0123456789ABCDEF"
@@ -69,23 +67,6 @@ local ByteArray = Class:extend{
 			table.insert(chars, string.char(byte))
 		end
 		return table.concat(chars, "")
-	end,
-	
-	-- Array Ops
-	sub = function(self, start, stop)
-		stop = stop or #self._bytes
-		if type(start) ~= "number" or type(stop) ~= "number" then
-			error("Expected number, number", 2)
-		end
-		local result = {}
-		for pos = start, stop do
-			table.insert(result, self._bytes[pos])
-		end
-		return result
-	end,
-	
-	reset = function(self)
-		self._pointer = 1
 	end,
 	
 	next = function(self, count)
@@ -116,6 +97,22 @@ local ByteArray = Class:extend{
 	nextAsString = function(self, count)
 		local bytes = self:next(count)
 		return self:toString(bytes)
+	end,
+	
+	sub = function(self, start, stop)
+		stop = stop or #self._bytes
+		if type(start) ~= "number" or type(stop) ~= "number" then
+			error("Expected number, number", 2)
+		end
+		local result = {}
+		for pos = start, stop do
+			table.insert(result, self._bytes[pos])
+		end
+		return result
+	end,
+	
+	reset = function(self)
+		self._pointer = 1
 	end
 }
 
