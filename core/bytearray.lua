@@ -1,19 +1,23 @@
 -- IMPORT
 local Class = require "qua.core.class"
+local conv = require "qua.math.convert"
 
 
 -- IMPLEMENTATION
 local ByteArray = Class:extend{
-	new = function(self)
+	new = function(self, bytes)
 		self._bytes = {}
 		self._pointer = 1
+		if bytes then
+			self:fromBytes(bytes)
+		end
 	end,
 	
-	fromArray = function(self, array)
-		if type(array) ~= "table" then
+	fromBytes = function(self, bytes)
+		if type(bytes) ~= "table" then
 			error("Expected array.", 2)
 		end
-		for _, byte in pairs(array) do
+		for _, byte in pairs(bytes) do
 			if type(byte) == "number" and 0 <= byte and byte <= 255 then
 				table.insert(self._bytes, byte)
 			else
@@ -31,20 +35,35 @@ local ByteArray = Class:extend{
 		end
 	end,
 	
-	toHex = function(self)
-		local values = "0123456789ABCDEF"
+	fromString = function(self, str)
+		if type(hex) ~= "string" then
+			error("Expected string.", 2)
+		end
+		for char in str:gmatch(".") do
+			table.insert(self._bytes, string.byte(char))
+		end
+	end,
+	
+	toHex = function(self, bytes)
+		bytes = bytes or self._bytes
+		local symbols = "0123456789ABCDEF"
 		local result = ""
-		for _, byte in pairs(self._bytes) do
+		for _, byte in pairs(bytes) do
 			local first = math.floor(byte / 16)
 			local second = byte - first * 16
-			result = result .. values:sub(first+1, first+1) .. values:sub(second+1, second+1)
+			result = result .. symbols:sub(first+1, first+1) .. symbols:sub(second+1, second+1)
 		end
 		return result
 	end,
 	
-	toString = function(self)
+	toInt = function(self, bytes)
+		return tonumber(self:toHex(bytes), 16)
+	end,
+	
+	toString = function(self, bytes)
+		bytes = bytes or self._bytes
 		local chars = {}
-		for _, byte in pairs(self._bytes) do
+		for _, byte in pairs(bytes) do
 			table.insert(chars, string.char(byte))
 		end
 		return table.concat(chars, "")
@@ -74,6 +93,25 @@ local ByteArray = Class:extend{
 			self._pointer = self._pointer + 1
 		end
 		return result
+	end,
+	
+	nextAsHex = function(self, count)
+		local bytes = self:next(count)
+		return self:toHex(bytes)
+	end,
+	
+	nextAsInt = function(self, count)
+		local bytes = self:next(count)
+		return self:toInt(bytes)
+	end,
+	
+	nextAsString = function(self, count)
+		local bytes = self:next(count)
+		return self:toString(bytes)
+	end,
+	
+	reset = function(self)
+		self._pointer = 1
 	end
 }
 
