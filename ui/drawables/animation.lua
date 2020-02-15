@@ -21,3 +21,7 @@ local Animation = Drawable:extend{
 		table.insert(self._animation, drawable)
 	end
 }
+
+
+-- EXPORT
+return Animation
