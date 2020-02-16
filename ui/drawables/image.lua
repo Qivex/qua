@@ -52,13 +52,17 @@ local Image = Drawable:extend{
 		end
 	end,
 	
-	draw = function(self, monitor)	
+	draw = function(self, monitor)
+		local width = self._size[1]
 		local pos_x, pos_y = unpack(self._pos)
 		for index, bgcol in pairs(self._bgcol) do
 			local token = self._token[index] or " "
 			local txcol = self._txcol[index]
-			local x, y = AT.from1D(index)
-			monitor.setCursorPos(pos_x + x, pos_y + y)
+			local x, y = AT.from1D(width, index)
+			monitor.setCursorPos(
+				x + (pos_x - 1),
+				y + (pos_y - 1)
+			)
 			monitor.setBackgroundColor(bgcol)
 			if txcol then
 				monitor.setTextColor(txcol)
