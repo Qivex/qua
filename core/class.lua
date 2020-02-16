@@ -44,12 +44,17 @@ local extend = function(class, extension)
 	return subclass
 end
 
+local getParent = function(self)
+	return self.__class.__parent
+end
+
 local Class = {}
 Class.__proto = {}
 Class.__proto.__name = "qua.core.class"
 Class.__proto.__class = Class
 Class.__proto.__index = Class.__proto
 Class.__proto.extend = extend
+Class.__proto.getParent = getParent
 
 setmetatable(Class, {
 	__index = Class.__proto,
