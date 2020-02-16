@@ -15,7 +15,7 @@ local Image = Drawable:extend{
 		self._token = {}
 	end,
 	
-	fromPaint = function(self, file)
+	fromPaint = function(self, path)
 		if fs.exists(path) and not fs.isDir(path) then
 			self._bgcol, self._txcol, self._token = {}, {}, {}
 			-- Read content
