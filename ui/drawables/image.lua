@@ -9,6 +9,10 @@ local Image = Drawable:extend{
 	new = function(self, pos, size)
 		self._pos = pos
 		self._size = size
+		self:clear()
+	end,
+	
+	clear = function(self)
 		-- 1D arrays!
 		self._bgcol = {}
 		self._txcol = {}
@@ -17,20 +21,27 @@ local Image = Drawable:extend{
 	
 	fromPaint = function(self, path)
 		if fs.exists(path) and not fs.isDir(path) then
-			self._bgcol, self._txcol, self._token = {}, {}, {}
+			self:clear()
 			-- Read content
+			local rows = {}
 			local file = fs.open(path, "r")
-			local content = file.readAll() .. "\n"
+			local line = file.readLine()
+			while line do
+				table.insert(rows, line)
+				line = file.readLine()
+			end
 			file.close()
 			-- Parse content
-			local rows = {}
-			for row in content:gmatch("(.*)\n") do
-				table.insert(rows, row)
-			end
-			local width = math.max(unpack(rows))
+			local width, height = unpack(self._size)
 			for y, row in pairs(rows) do
+				if y > height then
+					break
+				end
 				local x = 1
 				for colorcode in row:gmatch(".") do
+					if x > width then
+						break
+					end
 					local index = AT.to1D(width, x, y)
 					self._bgcol[index] = CT.decode(colorcode)
 					x = x + 1
@@ -40,7 +51,7 @@ local Image = Drawable:extend{
 			error("File not found.", 2)
 		end
 	end,
-		
+	
 	draw = function(self, monitor)	
 		local pos_x, pos_y = unpack(self._pos)
 		for index, bgcol in pairs(self._bgcol) do
