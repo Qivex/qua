@@ -11,8 +11,6 @@ end
 
 -- EXPORT
 return {
-	index = {
-		to1D = to1D,
-		from1D = from1D
-	}
+	to1D = to1D,
+	from1D = from1D
 }
