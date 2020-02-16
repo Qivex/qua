@@ -3,14 +3,14 @@ local PAINT_CHARS = "0123456789abcdef"
 local PAINT_LOOKUP = {}
 local color = 1
 for code in PAINT_CHARS:gmatch(".") do
-	PAINT_LOOKUP[char] = color
+	PAINT_LOOKUP[code] = color
 	color = color * 2
 end
 
 
 -- IMPLEMENTATION
-local decode = function(symbol)
-	return PAINT_LOOKUP[symbol]
+local decode = function(code)
+	return PAINT_LOOKUP[code]
 end
 
 local encode = function(color)
