@@ -9,6 +9,7 @@ local from1D = function(width, index)
 	return x, y
 end
 
+
 -- EXPORT
 return {
 	to1D = to1D,
