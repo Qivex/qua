@@ -57,8 +57,10 @@ local Display = Class:extend{
 	
 	selectScreen = function(self, name)
 		local screen = self:getScreen(name)
-		self._activeScreen = screen
-		self:update()
+		if screen ~= self._activeScreen then
+			self._activeScreen = screen
+			self:update()
+		end
 	end,
 	
 	update = function(self)
