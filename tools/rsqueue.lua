@@ -9,7 +9,7 @@ local RedstoneQueue = Class:extend{
 	end,
 	
 	add = function(self, side, output)
-		for valid in pairs({"front", "back", "top", "bottom", "left", "right"}) do
+		for _, valid in pairs({"front", "back", "top", "bottom", "left", "right"}) do
 			if side == valid then
 				table.insert(self._queue, {side, output})
 				return
@@ -19,7 +19,7 @@ local RedstoneQueue = Class:extend{
 	end,
 	
 	execNext = function(self)
-		local action = table.remove(self._queue)
+		local action = table.remove(self._queue, 1)
 		if action then
 			local side, output = unpack(action)
 			if type(output) == "boolean" then
