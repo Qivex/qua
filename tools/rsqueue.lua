@@ -35,33 +35,23 @@ local RedstoneQueue = Class:extend{
 		if not isValidSide(side) then
 			error("Invalid side.", 2)
 		end
-		if self:cooldownTimer() or self:hasMore() then
-			-- Delay (last too close or wrong order)
-			table.insert(self._queue, {side, output})
-		else
-			-- Execute
-			self:_exec(side, output)
-			self:_startCooldownTimer()
-		end
+		table.insert(self._queue, {side, output})
+		self:_startCooldownTimer()
 	end,
 	
 	execDelayed = function(self)
 		local action = table.remove(self._queue, 1)
 		if action then
-			self:exec(unpack(action))
+			local side, output = unpack(action)
+			if type(output) == "boolean" then
+				rs.setOutput(side, output)
+			elseif type(output) == "number" then
+				rs.setBundledOutput(side, output)
+			end
+			self._cooldown = nil
 			if self:hasMore() then
 				self:_startCooldownTimer()
-			else
-				self._cooldown = nil
 			end
-		end
-	end,
-	
-	_exec = function(self, side, output)
-		if type(output) == "boolean" then
-			rs.setOutput(side, output)
-		elseif type(output) == "number" then
-			rs.setBundledOutput(side, output)
 		end
 	end,
 	
