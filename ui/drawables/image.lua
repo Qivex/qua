@@ -27,7 +27,7 @@ local Image = Drawable:extend{
 			-- Read content
 			local rows = {}
 			local file = fs.open(path, "r")
-			local content = file.readAll()
+			local content = file.readAll() .. "\n"
 			file.close()
 			-- Parse content
 			self:setLayer("bgcol", content)
