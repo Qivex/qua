@@ -48,7 +48,7 @@ local Image = Drawable:extend{
 			end
 			pixels = colors
 		end
-		self._layers[name] = pixels
+		self._layers[layer] = pixels
 	end,
 	
 	convertMultiline = function(self, multiline)
