@@ -14,9 +14,11 @@ local Image = Drawable:extend{
 	
 	clear = function(self)
 		-- 1D arrays!
-		self._bgcol = {}
-		self._txcol = {}
-		self._token = {}
+		self._layers = {
+			bgcol = {},
+			txcol = {},
+			chars = {}
+		}
 	end,
 	
 	fromPaint = function(self, path)
@@ -25,28 +27,10 @@ local Image = Drawable:extend{
 			-- Read content
 			local rows = {}
 			local file = fs.open(path, "r")
-			local line = file.readLine()
-			while line do
-				table.insert(rows, line)
-				line = file.readLine()
-			end
+			local content = file.readAll()
 			file.close()
 			-- Parse content
-			local width, height = unpack(self._size)
-			for y, row in pairs(rows) do
-				if y > height then
-					break
-				end
-				local x = 1
-				for colorcode in row:gmatch(".") do
-					if x > width then
-						break
-					end
-					local index = AT.to1D(width, x, y)
-					self._bgcol[index] = CT.decode(colorcode)
-					x = x + 1
-				end
-			end
+			self:setLayer("bgcol", content)
 		else
 			error("File not found.", 2)
 		end
@@ -56,14 +40,16 @@ local Image = Drawable:extend{
 		if layer ~= "bgcol" and layer ~= "txcol" and layer ~= "chars" then
 			error("Undefined layer: Only 'bgcol', 'txcol' or 'chars'", 2)
 		end
-		local arr = self:convertMultiline(data)
+		local pixels = self:convertMultiline(data)
 		if layer ~= "chars" then
-			for index, colorcode in pairs(arr) do
-				arr[index] = CT.decode(colorcode)
+			local colors = {}
+			for index, colorcode in pairs(pixels) do
+				colors[index] = CT.decode(colorcode)
 			end
+			pixels = colors
 		end
-		self._layers[name] = arr
-	end
+		self._layers[name] = pixels
+	end,
 	
 	convertMultiline = function(self, multiline)
 		if type(multiline) ~= "string" then
@@ -88,14 +74,15 @@ local Image = Drawable:extend{
 			y = y + 1
 		end
 		return result
-	end
+	end,
 	
 	draw = function(self, monitor)
 		local width = self._size[1]
+		local layer = self._layers
 		local pos_x, pos_y = unpack(self._pos)
 		for index, bgcol in pairs(self._bgcol) do
-			local token = self._token[index] or " "
-			local txcol = self._txcol[index]
+			local char = layer.chars[index] or " "
+			local txcol = layer.txcol[index]
 			local x, y = AT.from1D(width, index)
 			monitor.setCursorPos(
 				x + (pos_x - 1),
@@ -105,7 +92,7 @@ local Image = Drawable:extend{
 			if txcol then
 				monitor.setTextColor(txcol)
 			end
-			monitor.write(token)
+			monitor.write(char)
 		end
 	end
 }
