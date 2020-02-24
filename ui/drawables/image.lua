@@ -78,21 +78,20 @@ local Image = Drawable:extend{
 	
 	draw = function(self, monitor)
 		local width = self._size[1]
-		local layer = self._layers
 		local pos_x, pos_y = unpack(self._pos)
-		for index, bgcol in pairs(layer.bgcol) do
-			local char = layer.chars[index] or " "
-			local txcol = layer.txcol[index]
+		local bgcol = self._layers.bgcol
+		local txcol = self._layers.txcol
+		local chars = self._layers.chars
+		-- Only draw on defined background (transparency!)
+		for index in pairs(bgcol) do
 			local x, y = AT.from1D(width, index)
 			monitor.setCursorPos(
 				x + (pos_x - 1),
 				y + (pos_y - 1)
 			)
-			monitor.setBackgroundColor(bgcol)
-			if txcol then
-				monitor.setTextColor(txcol)
-			end
-			monitor.write(char)
+			monitor.setBackgroundColor(bgcol[index] or colors.black)
+			monitor.setTextColor(txcol[index] or colors.white)
+			monitor.write(chars[index] or " ")
 		end
 	end
 }
