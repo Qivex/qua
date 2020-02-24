@@ -52,6 +52,44 @@ local Image = Drawable:extend{
 		end
 	end,
 	
+	setLayer = function(self, layer, data)
+		if layer ~= "bgcol" and layer ~= "txcol" and layer ~= "chars" then
+			error("Undefined layer: Only 'bgcol', 'txcol' or 'chars'", 2)
+		end
+		local arr = self:convertMultiline(data)
+		if layer ~= "chars" then
+			for index, colorcode in pairs(arr) do
+				arr[index] = CT.decode(colorcode)
+			end
+		end
+		self._layers[name] = arr
+	end
+	
+	convertMultiline = function(self, multiline)
+		if type(multiline) ~= "string" then
+			error("Expected string.", 2)
+		end
+		local result = {}
+		local width, height = unpack(self._size)
+		local y = 1
+		for row in multiline:gmatch("(.-)\n") do
+			if y > height then
+				break
+			end
+			local x = 1
+			for symbol in row:gmatch(".") do
+				if x > width then
+					break
+				end
+				local index = AT.to1D(width, x, y)
+				result[index] = symbol
+				x = x + 1
+			end
+			y = y + 1
+		end
+		return result
+	end
+	
 	draw = function(self, monitor)
 		local width = self._size[1]
 		local pos_x, pos_y = unpack(self._pos)
