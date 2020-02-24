@@ -80,7 +80,7 @@ local Image = Drawable:extend{
 		local width = self._size[1]
 		local layer = self._layers
 		local pos_x, pos_y = unpack(self._pos)
-		for index, bgcol in pairs(self._bgcol) do
+		for index, bgcol in pairs(layer.bgcol) do
 			local char = layer.chars[index] or " "
 			local txcol = layer.txcol[index]
 			local x, y = AT.from1D(width, index)
