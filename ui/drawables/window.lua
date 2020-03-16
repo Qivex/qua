@@ -114,7 +114,7 @@ local Window = Drawable:extend{
 	
 	draw = function(self, monitor)
 		for index, pixel in pairs(self._pixels) do
-			AT.from1D(self._width, index)
+			local x, y = AT.from1D(self._width, index)
 			monitor.setCursorPos(
 				x + (self._x - 1),
 				y + (self._y - 1)
