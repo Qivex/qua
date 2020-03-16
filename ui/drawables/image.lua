@@ -6,9 +6,12 @@ local CT = require "qua.tools.color"
 
 -- IMPLEMENTATION
 local Image = Drawable:extend{	
-	new = function(self, pos, size)
-		self._pos = pos
-		self._size = size
+	new = function(self, position, size)
+		if type(position) ~= "table" or type(size) ~= "table" then
+			error("Expected {x,y}, {width, height}", 2)
+		end
+		self._x, self._y = unpack(position)
+		self._width, self._height = unpack(size)
 		self:clear()
 	end,
 	
@@ -56,18 +59,17 @@ local Image = Drawable:extend{
 			error("Expected string.", 2)
 		end
 		local result = {}
-		local width, height = unpack(self._size)
 		local y = 1
 		for row in multiline:gmatch("(.-)\n") do
-			if y > height then
+			if y > self._height then
 				break
 			end
 			local x = 1
 			for symbol in row:gmatch(".") do
-				if x > width then
+				if x > self._width then
 					break
 				end
-				local index = AT.to1D(width, x, y)
+				local index = AT.to1D(self._width, x, y)
 				result[index] = symbol
 				x = x + 1
 			end
@@ -77,17 +79,15 @@ local Image = Drawable:extend{
 	end,
 	
 	draw = function(self, monitor)
-		local width = self._size[1]
-		local pos_x, pos_y = unpack(self._pos)
 		local bgcol = self._layers.bgcol
 		local txcol = self._layers.txcol
 		local chars = self._layers.chars
 		-- Only draw on defined background (transparency!)
 		for index in pairs(bgcol) do
-			local x, y = AT.from1D(width, index)
+			local x, y = AT.from1D(self._width, index)
 			monitor.setCursorPos(
-				x + (pos_x - 1),
-				y + (pos_y - 1)
+				x + (self._x - 1),
+				y + (self._y - 1)
 			)
 			monitor.setBackgroundColor(bgcol[index] or colors.black)
 			monitor.setTextColor(txcol[index] or colors.white)

@@ -1,5 +1,6 @@
 -- IMPORT
 local Drawable = require "qua.ui.drawable"
+local AT = require "qua.tools.array"
 
 
 -- IMPLEMENTATION
@@ -13,18 +14,16 @@ local validateColor = function(color)
 end
 
 local Window = Drawable:extend{
-	new = function(self, pos, size)
-		self._pos_x = pos[1]
-		self._pos_y = pos[2]
-		self._width = size[1]
-		self._height = size[2]
+	new = function(self, position, size)
+		self._x, self._y = unpack(position)
+		self._width, self._height = unpack(size)
 		-- Init
 		self._pixels = {}
 		self._cursor = {
-			pos_x = 1,
-			pos_y = 1,
-			col = colors.white,
-			bg = colors.black
+			x = 1,
+			y = 1,
+			color = colors.white,
+			backcolor = colors.black
 		}
 	end,
 	
@@ -48,18 +47,18 @@ local Window = Drawable:extend{
 				end
 				-- Iterate through chars
 				for char in text:gmatch(".") do
-					local x, y = self._cursor.pos_x, self._cursor.pos_y
+					local x, y = self._cursor.x, self._cursor.y
 					-- Only draw inside window
 					if 0 < x and x <= self._width and 0 < y and y <= self._height then
 						local pixel = {
 							text = char,
-							col = self._cursor.col,
-							bg = self._cursor.bg
+							color = self._cursor.color,
+							backcolor = self._cursor.backcolor
 						}
-						-- 1D-array (avoid nesting)
-						self._pixels[(y-1) * self._width + x] = pixel	
+						local index = AT.to1D(self._width, x, y)
+						self._pixels[index] = pixel
 					end
-					self._cursor.pos_x = x + 1
+					self._cursor.x = x + 1
 				end
 			end,
 			
@@ -67,31 +66,31 @@ local Window = Drawable:extend{
 				for i=1, self._width * self._height do
 					self._pixels[i] = {
 						text = " ",
-						col = self._cursor.col,
-						bg = self._cursor.bg
+						color = self._cursor.color,
+						backcolor = self._cursor.backcolor
 					}
 				end
 			end,
 			
 			clearLine = function()
-				local y = self._cursor.pos_y
+				local y = self._cursor.y
 				for i=(y-1) * self._width + 1, y * self._width do
 					self._pixels[i] = {
 						text = " ",
-						col = self._cursor.col,
-						bg = self._cursor.bg
+						color = self._cursor.color,
+						backcolor = self._cursor.backcolor
 					}
 				end
 			end,
 			
 			getCursorPos = function()
-				return self._cursor.pos_x, self._cursor.pos_y
+				return self._cursor.x, self._cursor.y
 			end,
 			
 			setCursorPos = function(x, y)
 				if type(x) == "number" and type(y) == "number" then
-					self._cursor.pos_x = x
-					self._cursor.pos_y = y
+					self._cursor.x = x
+					self._cursor.y = y
 				else
 					error("Expected number, number", 2)
 				end
@@ -103,25 +102,25 @@ local Window = Drawable:extend{
 			
 			setTextColor = function(color)
 				validateColor(color)
-				self._cursor.col = color
+				self._cursor.color = color
 			end,
 			
 			setBackgroundColor = function(color)
 				validateColor(color)
-				self._cursor.bg = color
+				self._cursor.backcolor = color
 			end
 		}
 	end,
 	
 	draw = function(self, monitor)
 		for index, pixel in pairs(self._pixels) do
-			local pixel_y = math.ceil(index / self._width)
-			local pixel_x = index - (pixel_y - 1) * self._width
-			local x = pixel_x + (self._pos_x - 1)
-			local y = pixel_y + (self._pos_y - 1)
-			monitor.setCursorPos(x, y)
-			monitor.setTextColor(pixel.col)
-			monitor.setBackgroundColor(pixel.bg)
+			AT.from1D(self._width, index)
+			monitor.setCursorPos(
+				x + (self._x - 1),
+				y + (self._y - 1)
+			)
+			monitor.setTextColor(pixel.color)
+			monitor.setBackgroundColor(pixel.backcolor)
 			monitor.write(pixel.text)
 		end
 	end
