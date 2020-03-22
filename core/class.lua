@@ -48,6 +48,21 @@ local getParent = function(self)
 	return self.__class.__parent
 end
 
+local isA = function(self, class)
+	if self.__class == class then
+		return true
+	else
+		local parent = self:getParent()
+		if parent then
+			-- Keep checking superclasses for a match
+			return parent:isA(class)
+		else
+			-- Class has no parent: End the check
+			return false
+		end
+	end
+end
+
 local Class = {}
 Class.__proto = {}
 Class.__proto.__name = "qua.core.class"
@@ -55,6 +70,7 @@ Class.__proto.__class = Class
 Class.__proto.__index = Class.__proto
 Class.__proto.extend = extend
 Class.__proto.getParent = getParent
+Class.__proto.isA = isA
 
 setmetatable(Class, {
 	__index = Class.__proto,
