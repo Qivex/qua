@@ -1,13 +1,11 @@
 -- IMPORT
-local Drawable = require "qua.ui.drawable"
+local Clickable = require "qua.ui.clickable"
 local Box = require "qua.ui.drawables.box"
 local Text = require "qua.ui.drawables.text"
 
 
 -- IMPLEMENTATION
-local Button = Drawable:extend{
-	_clickable = true,
-	
+local Button = Clickable:extend{
 	new = function(self, caption, pos, size, txcol, bgcol)
 		self._box = Box(pos, size, bgcol)
 		self._text = Text(caption, pos, txcol, bgcol)
