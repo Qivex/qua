@@ -7,62 +7,61 @@ local Window = require "qua.ui.drawables.window"
 local Screen = Drawable:extend{
 	_clickable = true,
 	
-	new = function(self, pos, size)
-		self._pos = pos
-		self._size = size
-		self._static = {}
-		self._dynamic = {}
-		self._clickable = {}
+	new = function(self, position, size)
+		self._x, self._y = unpack(position)
+		self._width, self._height = unpack(size)
+		-- Hold all elements to be drawn
+		self._statics = {}
+		self._dynamics = {}
+		self._clickables = {}
 		-- Initialize windows
-		self._back_window = Window({1, 1}, self._size)
-		self._main_window = Window(self._pos, self._size)
-		self._background = self._back_window:getFakeMonitor()
-		self._foreground = self._main_window:getFakeMonitor()
-		self:addDynamic(self._back_window)
+		self._dynamic_window = Window({self._x, self._y}, {self._width, self._height})
+		self._static_window = Window({1, 1}, {self._width, self._height})
+		-- Everything static equals first layer of dynamic window
+		self:addDynamic(self._static_window)
 	end,
 	
 	getSize = function(self)
-		return unpack(self._size)
+		return self._width, self._height
 	end,
 	
 	addStatic = function(self, drawable)
-		table.insert(self._static, drawable)
+		table.insert(self._statics, drawable)
 		if drawable:isClickable() then
-			table.insert(self._clickable, drawable)
+			table.insert(self._clickables, drawable)
 		end
 	end,
 	
 	addDynamic = function(self, drawable)
-		table.insert(self._dynamic, drawable)
+		table.insert(self._dynamics, drawable)
 		if drawable:isClickable() then
-			table.insert(self._clickable, drawable)
+			table.insert(self._clickables, drawable)
 		end
 	end,
 	
 	draw = function(self, monitor)
-		local fg, bg = self._foreground, self._background
+		local foreground = self._dynamic_window:getFakeMonitor()
+		local background = self._static_window:getFakeMonitor()
 		-- Draw newly added statics onto background
-		for _, drawable in pairs(self._static) do
-			drawable:draw(bg)
+		for _, drawable in pairs(self._statics) do
+			drawable:draw(background)
 		end
-		self._static = {}	-- ... only once
+		self._statics = {}	-- ... only once
 		-- Call all dynamic draw-functions
-		fg.setBackgroundColor(colors.black)
-		fg.clear()
-		for _, drawable in pairs(self._dynamic) do
-			drawable:draw(fg)
+		foreground.setBackgroundColor(colors.black)
+		foreground.clear()
+		for _, drawable in pairs(self._dynamics) do
+			drawable:draw(foreground)
 		end
-		-- Draw window
-		self._main_window:draw(monitor)
+		-- Draw dynamic window
+		self._dynamic_window:draw(monitor)
 	end,
 	
 	click = function(self, x, y)
-		local w, h = self:getSize()
-		local pos_x, pos_y = unpack(self._pos)
-		if pos_x <= x and x < pos_x + w and pos_y <= y and y < pos_y + h then
+		if x >= self._x and x < (self._x + self._width) and y >= self._y and y < (self._y + self._height) then
 			-- Notify all Clickables (only they know their click-area)
-			for _, clickable in pairs(self._clickable) do
-				clickable:click(x - pos_x + 1, y - pos_y + 1)
+			for _, clickable in pairs(self._clickables) do
+				clickable:click(x - self._x + 1, y - self._y + 1)
 			end
 		end
 	end
