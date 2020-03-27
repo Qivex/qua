@@ -9,11 +9,7 @@ local Drawable = Class:extend{
 	end,
 	
 	draw = function(self, monitor)
-		error("Can't draw abstract Drawable.", 2)
-	end,
-	
-	isClickable = function(self)
-		return self._clickable or false
+		error("The function 'Drawable:draw(monitor)' is required for Drawables!", 2)
 	end
 }
 
