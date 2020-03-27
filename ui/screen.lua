@@ -1,12 +1,10 @@
 -- IMPORT
-local Drawable = require "qua.ui.drawable"
+local Clickable = require "qua.ui.clickable"
 local Window = require "qua.ui.drawables.window"
 
 
 -- IMPLEMENTATION
-local Screen = Drawable:extend{
-	_clickable = true,
-	
+local Screen = Clickable:extend{
 	new = function(self, position, size)
 		self._x, self._y = unpack(position)
 		self._width, self._height = unpack(size)
@@ -27,14 +25,14 @@ local Screen = Drawable:extend{
 	
 	addStatic = function(self, drawable)
 		table.insert(self._statics, drawable)
-		if drawable:isClickable() then
+		if drawable:isA(Clickable) then
 			table.insert(self._clickables, drawable)
 		end
 	end,
 	
 	addDynamic = function(self, drawable)
 		table.insert(self._dynamics, drawable)
-		if drawable:isClickable() then
+		if drawable:isA(Clickable) then
 			table.insert(self._clickables, drawable)
 		end
 	end,
