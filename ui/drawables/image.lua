@@ -19,6 +19,12 @@ local Image = Drawable:extend{
 	
 	clear = function(self)
 		self._pixels = {}
+		for x=1, self._width do
+			self._pixels[x] = {}
+			for y=1, self._height do
+				self._pixels[x][y] = {}
+			end
+		end
 	end,
 	
 	fromPaint = function(self, path)
@@ -51,8 +57,7 @@ local Image = Drawable:extend{
 				if x > self._width then
 					break
 				end
-				local index = self._width * (y - 1) + x
-				self._pixels[index] = {
+				self._pixels[x][y] = {
 					bgcol = CT.decode(symbol),
 					symbol = " "
 				}
@@ -63,24 +68,17 @@ local Image = Drawable:extend{
 	end,
 	
 	draw = function(self, monitor)
-		local x, y = 1, 1
-		for _, pixel in pairs(self._pixels) do
-			-- Draw pixel
-			if pixel.bgcol then
-				monitor.setCursorPos(
-					x + (self._x - 1),
-					y + (self._y - 1)
-				)
-				monitor.setBackgroundColor(pixel.bgcol or colors.black)
-				monitor.setTextColor(pixel.txcol or colors.white)
-				monitor.write(pixel.symbol or "")
-			end
-			-- Shift x & y
-			if x == self._width then
-				x = 1
-				y = y + 1
-			else
-				x = x + 1
+		for x, column in pairs(self._pixels) do
+			for y, pixel in pairs(column) do
+				if pixel.bgcol then
+					monitor.setCursorPos(
+						x + (self._x - 1),
+						y + (self._y - 1)
+					)
+					monitor.setBackgroundColor(pixel.bgcol or colors.black)
+					monitor.setTextColor(pixel.txcol or colors.white)
+					monitor.write(pixel.symbol or "")
+				end
 			end
 		end
 	end
