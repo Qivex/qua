@@ -18,16 +18,7 @@ local Image = Drawable:extend{
 	end,
 	
 	clear = function(self)
-		local emptyPixel = {
-			bgcol = 2^15,	-- black
-			txcol = 0,		-- white
-			symbol = ""
-		}
-		local pixels = {}
-		for i=1, self._width * self._height do
-			table.insert(pixels, emptyPixel)
-		end
-		self._pixels = pixels
+		self._pixels = {}
 	end,
 	
 	fromPaint = function(self, path)
@@ -38,7 +29,7 @@ local Image = Drawable:extend{
 			local content = file.readAll() .. "\n"
 			file.close()
 			-- Parse content
-			self._pixels = convertMultiline(content)
+			self:convertMultiline(content)
 		else
 			error("File not found.", 2)
 		end
@@ -48,7 +39,6 @@ local Image = Drawable:extend{
 		if type(multiline) ~= "string" then
 			error("Expected string.", 2)
 		end
-		local result = {}
 		local index = 1
 		-- Parse text
 		local y = 1
@@ -62,30 +52,36 @@ local Image = Drawable:extend{
 					break
 				end
 				local index = self._width * (y - 1) + x
-				result[index].bgcol = CT.decode(symbol)
+				self._pixels[index] = {
+					bgcol = CT.decode(symbol),
+					symbol = " "
+				}
 				x = x + 1
 			end
 			y = y + 1
 		end
-		return result
 	end,
 	
 	draw = function(self, monitor)
 		local x, y = 1, 1
 		for _, pixel in pairs(self._pixels) do
-			if x = self._width then
+			-- Draw pixel
+			if pixel.bgcol then
+				monitor.setCursorPos(
+					x + (self._x - 1),
+					y + (self._y - 1)
+				)
+				monitor.setBackgroundColor(pixel.bgcol or colors.black)
+				monitor.setTextColor(pixel.txcol or colors.white)
+				monitor.write(pixel.symbol or "")
+			end
+			-- Shift x & y
+			if x == self._width then
 				x = 1
 				y = y + 1
 			else
 				x = x + 1
 			end
-			monitor.setCursorPos(
-				x + (self._x - 1),
-				y + (self._y - 1)
-			)
-			monitor.setBackgroundColor(pixel.bgcol)
-			monitor.setTextColor(pixel.txcol)
-			monitor.write(pixel.symbol)
 		end
 	end
 }
