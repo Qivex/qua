@@ -49,6 +49,9 @@ local getParent = function(self)
 end
 
 local isA = function(self, class)
+	if type(self) ~= "table" then
+		return false
+	end
 	if self.__class == class then
 		return true
 	else
