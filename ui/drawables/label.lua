@@ -3,7 +3,7 @@ local Drawable = require "qua.ui.drawable"
 
 
 -- IMPLEMENTATION
-local Text = Drawable:extend{
+local Label = Drawable:extend{
 	new = function(self, text, pos, txcol, bgcol)
 		self:setText(text)
 		self:setPos(pos)
@@ -54,4 +54,4 @@ local Text = Drawable:extend{
 
 
 -- EXPORT
-return Text
+return Label
