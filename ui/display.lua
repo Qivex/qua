@@ -6,6 +6,7 @@ local Screen = require "qua.ui.screen"
 -- IMPLEMENTATION
 local Display = Class:extend{
 	new = function(self, side, scale)
+		side = side or "term"
 		if side == "term" then
 			self._monitor = term
 		elseif peripheral.getType(side) == "monitor" then

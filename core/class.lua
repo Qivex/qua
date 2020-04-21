@@ -49,7 +49,8 @@ local getParent = function(self)
 end
 
 local isA = function(self, class)
-	if type(self) ~= "table" then
+	if type(self) ~= "table" or not self.__class then
+		-- Filter non-class elements
 		return false
 	end
 	if self.__class == class then
