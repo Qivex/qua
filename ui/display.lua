@@ -10,7 +10,7 @@ local Display = Class:extend{
 			self._monitor = term
 		elseif peripheral.getType(side) == "monitor" then
 			self._monitor = peripheral.wrap(side)
-			self._monitor.setTextScale(scale)
+			self._monitor.setTextScale(scale or 1)
 		else
 			self._monitor = term
 		end
@@ -38,13 +38,19 @@ local Display = Class:extend{
 	end,
 	
 	addScreen = function(self, name, screen)
+		if type(name) ~= "string" or not Class.isA(screen, Screen) then
+			error("Expected string & qua.ui.screen!", 2)
+		end
 		if self._screens[name] ~= nil then
 			error("This display already has a screen called '" .. name .. "'!", 2)
 		end
 		self._screens[name] = screen
 	end,
 	
-	getScreen = function(self, name, screen)
+	getScreen = function(self, name)
+		if type(name) ~= "string" then
+			error("Expected string!", 2)
+		end
 		if self._screens[name] == nil then
 			error("No screen called '" .. name .. "'!", 2)
 		end
