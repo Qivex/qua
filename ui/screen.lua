@@ -1,4 +1,6 @@
 -- IMPORT
+local Class = require "qua.core.class"
+local Drawable = require "qua.ui.drawable"
 local Clickable = require "qua.ui.clickable"
 local Window = require "qua.ui.drawables.window"
 
@@ -24,6 +26,9 @@ local Screen = Clickable:extend{
 	end,
 	
 	addStatic = function(self, drawable)
+		if not Class.isA(drawable, Drawable) then
+			error("Expected qua.ui.drawable(s)!", 2)
+		end
 		table.insert(self._statics, drawable)
 		if drawable:isA(Clickable) then
 			table.insert(self._clickables, drawable)
@@ -31,6 +36,9 @@ local Screen = Clickable:extend{
 	end,
 	
 	addDynamic = function(self, drawable)
+		if not Class.isA(drawable, Drawable) then
+			error("Expected qua.ui.drawable(s)!", 2)
+		end
 		table.insert(self._dynamics, drawable)
 		if drawable:isA(Clickable) then
 			table.insert(self._clickables, drawable)
