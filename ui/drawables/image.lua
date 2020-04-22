@@ -1,19 +1,17 @@
 -- IMPORT
+local assert = require "qua.core.assert"
 local Drawable = require "qua.ui.drawable"
-local AT = require "qua.tools.array"
-local CT = require "qua.tools.color"
+local Color = require "qua.cc.color"
 
 
 -- IMPLEMENTATION
 local Image = Drawable:extend{	
 	new = function(self, position, size)
-		--[[
-		if type(position) ~= "table" or type(size) ~= "table" then
-			error("Expected {x,y}, {width, height}", 2)
-		end
-		]]
+		assert(type(position) == "table" and type(size) == "table", "Expected table & table", 3)
 		self._x, self._y = unpack(position)
 		self._width, self._height = unpack(size)
+		assert(type(self._x) == "number" and type(self._y) == "number", "Expected 2 numbers as position!", 3)
+		assert(type(self._width) == "number" and type(self._height) == "number", "Expected 2 numbers as size!", 3)
 		self:clear()
 	end,
 	
@@ -28,24 +26,19 @@ local Image = Drawable:extend{
 	end,
 	
 	fromPaint = function(self, path)
-		if fs.exists(path) and not fs.isDir(path) then
-			self:clear()
-			-- Read content
-			local file = fs.open(path, "r")
-			local content = file.readAll() .. "\n"
-			file.close()
-			-- Parse content
-			self:convertMultiline(content)
-		else
-			error("File not found.", 2)
-		end
+		assert(type(path) == "string", "Expected string!", 2)
+		assert(fs.exists(path) and not fs.isDir(path), "File not found!", 2)
+		self:clear()
+		-- Read content
+		local file = fs.open(path, "r")
+		local content = file.readAll() .. "\n"
+		file.close()
+		-- Parse content
+		self:fromMultiline(content)
 	end,
 	
-	convertMultiline = function(self, multiline)
-		if type(multiline) ~= "string" then
-			error("Expected string.", 2)
-		end
-		local index = 1
+	fromMultiline = function(self, multiline)
+		assert(type(multiline) == "string", "Expected string.", 2)
 		-- Parse text
 		local y = 1
 		for row in multiline:gmatch("(.-)\n") do
@@ -58,7 +51,7 @@ local Image = Drawable:extend{
 					break
 				end
 				self._pixels[x][y] = {
-					bgcol = CT.decode(symbol),
+					bgcol = Color.fromHex(symbol),
 					symbol = " "
 				}
 				x = x + 1
