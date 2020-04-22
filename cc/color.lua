@@ -1,5 +1,4 @@
 -- IMPORT
-local Class = require "qua.core.class"
 local assert = require "qua.core.assert"
 
 
@@ -9,10 +8,10 @@ local PAINT_CHARS = "0123456789abcdef"
 
 -- IMPLEMENTATION
 local PAINT_LOOKUP = {}
-local color = 1
+local col = 1
 for code in PAINT_CHARS:gmatch(".") do
 	PAINT_LOOKUP[code] = color
-	color = color * 2
+	col = col * 2
 end
 
 local isValidColor = function(col)
@@ -28,31 +27,22 @@ local isValidColor = function(col)
 	end
 end
 
-local Color = Class:extend{
-	new = function(self, col)
-		assert(isValidColor(col), "Invalid color!", 3)
-		self._color = col
-	end,
-	
-	__tonumber = function(self)
-		return self._color
-	end,
-	
-	isValidCover = isValidCover,
-	
-	fromHex = function(symbol)
-		assert(type(symbol) == "string", "Expected string!", 2)
-		assert(symbol:len() == 1, "Expected a single char!", 2)
-		return PAINT_LOOKUP[symbol]	-- Can return nil (intentional)
-	end,
-	
-	toHex = function(col)
-		assert(isValidColor(col), "Invalid color!", 2)
-		local base = math.log(col) / math.log(2)	-- simulates 'math.log2(col)'
-		return PAINT_CHARS:sub(base + 1, base + 1)
-	end
-}
+local fromHex = function(symbol)
+	assert(type(symbol) == "string", "Expected string!", 2)
+	assert(symbol:len() == 1, "Expected a single char!", 2)
+	return PAINT_LOOKUP[symbol]	-- Can return nil (intentional)
+end
+
+local toHex = function(col)
+	assert(isValidColor(col), "Invalid color!", 2)
+	local base = math.log(col) / math.log(2)	-- simulates 'math.log2(col)'
+	return PAINT_CHARS:sub(base + 1, base + 1)
+end
 
 
 -- EXPORT
-return Color
+return {
+	isValidColor = isValidColor,
+	fromHex = fromHex,
+	toHex = toHex
+}
