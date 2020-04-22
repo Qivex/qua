@@ -11,8 +11,8 @@ local Display = Class:extend{
 		-- Defaults
 		side = side or "term"
 		scale = scale or 1
-		assert(Side.isValidSide(side) or side == "term", "Expected valid side!", 2)
-		assert(type(scale) == "number" and scale >= 0.5 and scale <= 5, "Expected number in range 0.5-5!", 2)
+		assert(Side.isValidSide(side) or side == "term", "Expected valid side!", 3)
+		assert(type(scale) == "number" and scale >= 0.5 and scale <= 5, "Expected number in range 0.5-5!", 3)
 		-- Decide which term to use
 		if side == "term" then
 			self._monitor = term

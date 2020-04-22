@@ -9,11 +9,11 @@ local Window = require "qua.ui.drawables.window"
 -- IMPLEMENTATION
 local Screen = Clickable:extend{
 	new = function(self, position, size)
-		assert(type(position) == "table" and type(size) == "table", "Expected table & table", 2)
+		assert(type(position) == "table" and type(size) == "table", "Expected table & table", 3)
 		self._x, self._y = unpack(position)
 		self._width, self._height = unpack(size)
-		assert(type(self._x) == "number" and type(self._y) == "number", "Expected 2 numbers as position!", 2)
-		assert(type(self._width) == "number" and type(self._height) == "number", "Expected 2 numbers as size!", 2)
+		assert(type(self._x) == "number" and type(self._y) == "number", "Expected 2 numbers as position!", 3)
+		assert(type(self._width) == "number" and type(self._height) == "number", "Expected 2 numbers as size!", 3)
 		-- Hold all elements to be drawn
 		self._statics = {}
 		self._dynamics = {}
