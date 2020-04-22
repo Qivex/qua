@@ -10,7 +10,7 @@ local VALID_SIDES = {"front", "back", "top", "bottom", "left", "right"}
 -- IMPLEMENTATION
 local Side = Class:extend{
 	new = function(self, side)
-		assert(self.isValid(side), "Invalid side!", 3)
+		assert(self.isValidSide(side), "Invalid side!", 3)
 		self._side = side
 	end,
 	
@@ -18,7 +18,7 @@ local Side = Class:extend{
 		return self._side
 	end,
 	
-	isValid = function(side)
+	isValidSide = function(side)
 		-- Side must be string
 		if type(side) ~= "string" then
 			return false
@@ -30,6 +30,10 @@ local Side = Class:extend{
 			end
 		end
 		return false
+	end,
+	
+	allValidSides = function()
+		return VALID_SIDES
 	end
 }
 
