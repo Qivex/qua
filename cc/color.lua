@@ -8,19 +8,19 @@ local PAINT_CHARS = "0123456789abcdef"
 
 -- IMPLEMENTATION
 local PAINT_LOOKUP = {}
-local col = 1
+local color = 1
 for code in PAINT_CHARS:gmatch(".") do
-	PAINT_LOOKUP[code] = col
-	col = col * 2
+	PAINT_LOOKUP[code] = color
+	color = color * 2
 end
 
-local isValidColor = function(col)
+local isValidColor = function(color)
 	-- Color must be number
-	if type(col) ~= "number" then
+	if type(color) ~= "number" then
 		return false
 	end
 	-- Anything inside interval is valid
-	if col >= 1 and col < 65536 then
+	if color >= 1 and color < 65536 then
 		return true
 	else
 		return false
@@ -33,9 +33,9 @@ local fromHex = function(symbol)
 	return PAINT_LOOKUP[symbol]	-- Can return nil (intentional)
 end
 
-local toHex = function(col)
-	assert(isValidColor(col), "Invalid color!", 2)
-	local base = math.log(col) / math.log(2)	-- simulates 'math.log2(col)'
+local toHex = function(color)
+	assert(isValidColor(color), "Invalid color!", 2)
+	local base = math.log(color) / math.log(2)	-- simulates 'math.log2(color)'
 	return PAINT_CHARS:sub(base + 1, base + 1)
 end
 
