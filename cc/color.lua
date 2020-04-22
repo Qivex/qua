@@ -10,7 +10,7 @@ local PAINT_CHARS = "0123456789abcdef"
 local PAINT_LOOKUP = {}
 local col = 1
 for code in PAINT_CHARS:gmatch(".") do
-	PAINT_LOOKUP[code] = color
+	PAINT_LOOKUP[code] = col
 	col = col * 2
 end
 
