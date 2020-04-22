@@ -1,18 +1,21 @@
 -- IMPORT
+local assert = require "qua.core.assert"
 local Drawable = require "qua.ui.drawable"
+local Color = require "qua.cc.color"
 
 
 -- IMPLEMENTATION
 local Label = Drawable:extend{
-	new = function(self, text, pos, txcol, bgcol)
+	new = function(self, text, position, txcol, bgcol)
 		self:setText(text)
-		self:setPos(pos)
+		self:setPos(position)
 		self:setTextColor(txcol)
 		self:setBackgroundColor(bgcol)
 	end,
 	
 	setText = function(self, text)
-		self._text = text or ""
+		assert(type(text) == "string", "Expected string!", 2)
+		self._text = text
 	end,
 	
 	getText = function(self)
@@ -20,8 +23,9 @@ local Label = Drawable:extend{
 	end,
 	
 	setPos = function(self, pos)
-		self._pos_x = pos[1] or 1
-		self._pos_y = pos[2] or 1
+		assert(type(position) == "table", "Expected table!", 2)
+		self._pos_x, self._pos_y = unpack(position)
+		assert(type(self._pos_x) == "number" and type(self._pos_y) == "number", "Expected 2 numbers as position!", 2)
 	end,
 	
 	getPos = function(self)
@@ -29,7 +33,8 @@ local Label = Drawable:extend{
 	end,
 	
 	setTextColor = function(self, color)
-		self._txcol = color or colors.white
+		assert(Color.isValidColor(color), "Expected valid color!", 2)
+		self._txcol = color
 	end,
 	
 	getTextColor = function(self)
@@ -37,7 +42,8 @@ local Label = Drawable:extend{
 	end,
 	
 	setBackgroundColor = function(self, color)
-		self._bgcol = color or colors.black
+		assert(Color.isValidColor(color), "Expected valid color!", 2)
+		self._bgcol = color
 	end,
 	
 	getBackgroundColor = function(self)

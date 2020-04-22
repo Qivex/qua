@@ -1,18 +1,21 @@
 -- IMPORT
-local Drawable = require "qua.ui.drawable" 
+local assert = require "qua.core.assert"
+local Drawable = require "qua.ui.drawable"
+local Color = require "qua.cc.color"
 
 
 -- IMPLEMENTATION
 local Box = Drawable:extend{
-	new = function(self, pos, size, color)
-		self:setPos(pos)
+	new = function(self, position, size, color)
+		self:setPos(position)
 		self:setSize(size)
 		self:setColor(color)
 	end,
 	
-	setPos = function(self, pos)
-		self._pos_x = pos[1] or 1
-		self._pos_y = pos[2] or 1
+	setPos = function(self, position)
+		assert(type(position) == "table", "Expected table!", 2)
+		self._pos_x, self._pos_y = unpack(position)
+		assert(type(self._pos_x) == "number" and type(self._pos_y) == "number", "Expected 2 numbers as position!", 2)
 	end,
 	
 	getPos = function(self)
@@ -20,8 +23,9 @@ local Box = Drawable:extend{
 	end,
 	
 	setSize = function(self, size)
-		self._width = size[1] or 1
-		self._height = size[2] or 1
+		assert(type(size) == "table", "Expected table!", 2)
+		self._width, self._height = unpack(size)
+		assert(type(self._width) == "number" and type(self._height) == "number", "Expected 2 numbers as size!", 2)
 	end,
 	
 	getSize = function(self)
@@ -29,7 +33,8 @@ local Box = Drawable:extend{
 	end,
 	
 	setColor = function(self, color)
-		self._col = color or colors.red
+		assert(Color.isValidColor(color), "Expected valid color!", 2)
+		self._col = color
 	end,
 	
 	getColor = function(self)

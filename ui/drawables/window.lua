@@ -15,8 +15,11 @@ end
 
 local Window = Drawable:extend{
 	new = function(self, position, size)
+		assert(type(position) == "table" and type(size) == "table", "Expected table & table", 3)
 		self._x, self._y = unpack(position)
 		self._width, self._height = unpack(size)
+		assert(type(self._x) == "number" and type(self._y) == "number", "Expected 2 numbers as position!", 3)
+		assert(type(self._width) == "number" and type(self._height) == "number", "Expected 2 numbers as size!", 3)
 		-- Init
 		self._pixels = {}
 		self._cursor = {
