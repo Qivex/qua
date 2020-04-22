@@ -1,4 +1,5 @@
 -- IMPORT
+local assert = require "qua.core.assert"
 local Class = require "qua.core.class"
 local Drawable = require "qua.ui.drawable"
 local Clickable = require "qua.ui.clickable"
@@ -8,8 +9,11 @@ local Window = require "qua.ui.drawables.window"
 -- IMPLEMENTATION
 local Screen = Clickable:extend{
 	new = function(self, position, size)
+		assert(type(position) == "table" and type(size) == "table", "Expected table & table", 2)
 		self._x, self._y = unpack(position)
 		self._width, self._height = unpack(size)
+		assert(type(self._x) == "number" and type(self._y) == "number", "Expected 2 numbers as position!", 2)
+		assert(type(self._width) == "number" and type(self._height) == "number", "Expected 2 numbers as size!", 2)
 		-- Hold all elements to be drawn
 		self._statics = {}
 		self._dynamics = {}
@@ -17,7 +21,7 @@ local Screen = Clickable:extend{
 		-- Initialize windows
 		self._dynamic_window = Window({self._x, self._y}, {self._width, self._height})
 		self._static_window = Window({1, 1}, {self._width, self._height})
-		-- Everything static equals first layer of dynamic window
+		-- Everything static makes up bottom layer of dynamic window
 		self:addDynamic(self._static_window)
 	end,
 	
@@ -26,9 +30,7 @@ local Screen = Clickable:extend{
 	end,
 	
 	addStatic = function(self, drawable)
-		if not Class.isA(drawable, Drawable) then
-			error("Expected qua.ui.drawable(s)!", 2)
-		end
+		assert(Class.isA(drawable, Drawable), "Expected qua.ui.drawable(s)!", 2)
 		table.insert(self._statics, drawable)
 		if drawable:isA(Clickable) then
 			table.insert(self._clickables, drawable)
@@ -36,9 +38,7 @@ local Screen = Clickable:extend{
 	end,
 	
 	addDynamic = function(self, drawable)
-		if not Class.isA(drawable, Drawable) then
-			error("Expected qua.ui.drawable(s)!", 2)
-		end
+		assert(Class.isA(drawable, Drawable), "Expected qua.ui.drawable(s)!", 2)
 		table.insert(self._dynamics, drawable)
 		if drawable:isA(Clickable) then
 			table.insert(self._clickables, drawable)

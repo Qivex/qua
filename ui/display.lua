@@ -1,12 +1,19 @@
 -- IMPORT
+local assert = require "qua.core.assert"
 local Class = require "qua.core.class"
 local Screen = require "qua.ui.screen"
+local Side = require "qua.cc.side"
 
 
 -- IMPLEMENTATION
 local Display = Class:extend{
 	new = function(self, side, scale)
+		-- Defaults
 		side = side or "term"
+		scale = scale or 1
+		assert(Side.isValidSide(side) or side == "term", "Expected valid side!", 2)
+		assert(type(scale) == "number" and scale >= 0.5 and scale <= 5, "Expected number in range 0.5-5!", 2)
+		-- Decide which term to use
 		if side == "term" then
 			self._monitor = term
 		elseif peripheral.getType(side) == "monitor" then
@@ -39,22 +46,14 @@ local Display = Class:extend{
 	end,
 	
 	addScreen = function(self, name, screen)
-		if type(name) ~= "string" or not Class.isA(screen, Screen) then
-			error("Expected string & qua.ui.screen!", 2)
-		end
-		if self._screens[name] ~= nil then
-			error("This display already has a screen called '" .. name .. "'!", 2)
-		end
+		assert(type(name) == "string" and Class.isA(screen, Screen), "Expected string & qua.ui.screen!", 2)
+		assert(self._screens[name] == nil, "This display already has a screen called '" .. name .. "'!", 2)
 		self._screens[name] = screen
 	end,
 	
 	getScreen = function(self, name)
-		if type(name) ~= "string" then
-			error("Expected string!", 2)
-		end
-		if self._screens[name] == nil then
-			error("No screen called '" .. name .. "'!", 2)
-		end
+		assert(type(name) == "string", "Expected string!", 2)
+		assert(self._screens[name] ~= nil, "No screen called '" .. name .. "'!", 2)
 		return self._screens[name]
 	end,
 	
@@ -80,7 +79,7 @@ local Display = Class:extend{
 	
 	click = function(self, x, y)
 		local screen = self:getCurrentScreen()
-		if screen ~= nil then
+		if screen then
 			screen:click(x, y)
 		end
 	end
