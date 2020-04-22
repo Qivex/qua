@@ -40,7 +40,7 @@ local Color = Class:extend{
 	
 	fromHex = function(symbol)
 		assert(type(symbol) == "string", "Expected string!", 2)
-		assert(symbol:len() == 1, "Only 1 char!", 2)
+		assert(symbol:len() == 1, "Expected a single char!", 2)
 		return PAINT_LOOKUP[symbol]	-- Can return nil (intentional)
 	end,
 	
