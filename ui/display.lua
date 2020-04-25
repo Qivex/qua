@@ -41,8 +41,13 @@ local Display = Class:extend{
 		mon.setCursorPos(1, 1)
 	end,
 	
-	getNewScreen = function(self)
-		return Screen({1,1}, {self:getMonitor().getSize()})
+	getNewScreen = function(self, name)
+		local new_screen = Screen({1,1}, {self:getMonitor().getSize()})
+		if name then
+			assert(type(name) == "string", "Screen name must be string!", 2)
+			self:addScreen(name, new_screen)
+		end
+		return new_screen
 	end,
 	
 	addScreen = function(self, name, screen)
