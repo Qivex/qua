@@ -3,7 +3,6 @@ local Class = require "qua.core.class"
 
 
 -- CONSTANTS
-local VALID_SIDES = {"front", "back", "top", "bottom", "left", "right"}
 local COOLDOWN = 0.5
 
 
