@@ -1,6 +1,6 @@
 -- IMPORT
-local ByteArray = require "qua.core.bytearray"
-local BitArray = require "qua.core.bitarray"
+local BitArray = require "qua.decode.bitarray"
+local ByteArray = require "qua.decode.bytearray"
 local deflate = require "qua.decode.deflate"
 
 

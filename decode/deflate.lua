@@ -2,7 +2,7 @@
 
 -- IMPORT
 local Class = require "qua.core.class"
-local BitArray = require "qua.core.bitarray"
+local BitArray = require "qua.decode.bitarray"
 local HuffmanTree = require "qua.decode.huffman"
 
 
