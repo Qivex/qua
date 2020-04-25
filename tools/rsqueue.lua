@@ -1,5 +1,7 @@
 -- IMPORT
+local assert = require "qua.core.assert"
 local Class = require "qua.core.class"
+local Side = require "qua.cc.side"
 
 
 -- CONSTANTS
@@ -7,15 +9,6 @@ local COOLDOWN = 0.5
 
 
 -- IMPLEMENTATION
-local isValidSide = function(side)
-	for _, valid in pairs(VALID_SIDES) do
-		if side == valid then
-			return true
-		end
-	end
-	return false
-end
-
 local RedstoneQueue = Class:extend{
 	new = function(self)
 		self._queue = {}
@@ -31,9 +24,7 @@ local RedstoneQueue = Class:extend{
 	end,
 	
 	add = function(self, side, output)
-		if not isValidSide(side) then
-			error("Invalid side.", 2)
-		end
+		assert(Side.isValidSide(side), "Invalid side.", 2)
 		table.insert(self._queue, {side, output})
 		self:_startCooldownTimer()
 	end,
