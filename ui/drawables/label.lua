@@ -9,8 +9,8 @@ local Label = Drawable:extend{
 	new = function(self, text, position, txcol, bgcol)
 		self:setText(text)
 		self:setPos(position)
-		self:setTextColor(txcol)
-		self:setBackgroundColor(bgcol)
+		self:setTextColor(txcol or colors.white)
+		self:setBackgroundColor(bgcol or colors.black)
 	end,
 	
 	setText = function(self, text)
@@ -22,7 +22,7 @@ local Label = Drawable:extend{
 		return self._text
 	end,
 	
-	setPos = function(self, pos)
+	setPos = function(self, position)
 		assert(type(position) == "table", "Expected table!", 2)
 		self._pos_x, self._pos_y = unpack(position)
 		assert(type(self._pos_x) == "number" and type(self._pos_y) == "number", "Expected 2 numbers as position!", 2)
