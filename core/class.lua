@@ -69,7 +69,6 @@ end
 
 local Class = {}
 Class.__proto = {}
-Class.__proto.__name = "qua.core.class"
 Class.__proto.__class = Class
 Class.__proto.__index = Class.__proto
 Class.__proto.extend = extend
