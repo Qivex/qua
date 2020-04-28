@@ -3,7 +3,7 @@ local assert = require "qua.core.assert"
 local Class = require "qua.core.class"
 local Drawable = require "qua.ui.drawable"
 local Clickable = require "qua.ui.clickable"
-local Window = require "qua.ui.drawables.window"
+local Window = require "qua.ui.window"
 
 
 -- IMPLEMENTATION
