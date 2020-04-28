@@ -1,7 +1,7 @@
 -- IMPORT
 local Clickable = require "qua.ui.clickable"
-local Box = require "qua.ui.drawables.box"
-local Label = require "qua.ui.drawables.label"
+local Box = require "qua.ui.box"
+local Label = require "qua.ui.label"
 
 
 -- IMPLEMENTATION
