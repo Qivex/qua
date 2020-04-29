@@ -7,6 +7,7 @@ return {
 	animation = require "qua.ui.animation",
 	display = require "qua.ui.display",
 	screen = require "qua.ui.screen",
+	multiscreen = require "qua.ui.multiscreen",
 	-- Elements
 	box = require "qua.ui.box",
 	button = require "qua.ui.button",
