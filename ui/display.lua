@@ -22,7 +22,12 @@ local Display = MultiScreen:extend{
 			self._monitor = term
 		end
 		-- Super
-		self:getParent().new(self, {1, 1}, {self:getSize()})
+		MultiScreen.new(self, {1, 1}, {self:getSize()})
+	end,
+	
+	selectScreen = function(self, name)
+		MultiScreen.selectScreen(self, name)
+		self:update()
 	end,
 	
 	getMonitor = function(self)
