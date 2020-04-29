@@ -1,12 +1,11 @@
 -- IMPORT
 local assert = require "qua.core.assert"
-local Class = require "qua.core.class"
-local Screen = require "qua.ui.screen"
 local Side = require "qua.cc.side"
+local MultiScreen = require "qua.ui.multiscreen"
 
 
 -- IMPLEMENTATION
-local Display = Class:extend{
+local Display = MultiScreen:extend{
 	new = function(self, side, scale)
 		-- Defaults
 		side = side or "term"
@@ -22,7 +21,8 @@ local Display = Class:extend{
 		else
 			self._monitor = term
 		end
-		self._screens = {}
+		-- Super
+		self:getParent().new(self, {1, 1}, {self:getSize()})
 	end,
 	
 	getMonitor = function(self)
@@ -41,52 +41,8 @@ local Display = Class:extend{
 		mon.setCursorPos(1, 1)
 	end,
 	
-	getNewScreen = function(self, name)
-		local new_screen = Screen({1,1}, {self:getMonitor().getSize()})
-		if name then
-			assert(type(name) == "string", "Screen name must be string!", 2)
-			self:addScreen(name, new_screen)
-		end
-		return new_screen
-	end,
-	
-	addScreen = function(self, name, screen)
-		assert(type(name) == "string" and Class.isA(screen, Screen), "Expected string & qua.ui.screen!", 2)
-		assert(self._screens[name] == nil, "This display already has a screen called '" .. name .. "'!", 2)
-		self._screens[name] = screen
-	end,
-	
-	getScreen = function(self, name)
-		assert(type(name) == "string", "Expected string!", 2)
-		assert(self._screens[name] ~= nil, "No screen called '" .. name .. "'!", 2)
-		return self._screens[name]
-	end,
-	
-	getCurrentScreen = function(self)
-		return self._activeScreen
-	end,
-	
-	selectScreen = function(self, name)
-		local screen = self:getScreen(name)
-		if screen ~= self._activeScreen then
-			self._activeScreen = screen
-			self:update()
-		end
-	end,
-	
 	update = function(self)
-		self:clear()
-		local screen = self:getCurrentScreen()
-		if screen then
-			screen:draw(self:getMonitor())
-		end
-	end,
-	
-	click = function(self, x, y)
-		local screen = self:getCurrentScreen()
-		if screen then
-			screen:click(x, y)
-		end
+		self:draw(self._monitor)
 	end
 }
 
