@@ -168,7 +168,7 @@ local Window = Drawable:extend{
 		fm.setBackgroundColor = function(color)
 			validateColor(color)
 			self._cursor:setBackCol(color)
-		end,
+		end
 		
 		fm.setTextScale = function(scale)
 			assert(type(scale) == "number" and scale >= 0.5 and scale <= 5, "Expected number in range 0.5-5!", 2)
