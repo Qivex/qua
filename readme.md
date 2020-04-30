@@ -12,8 +12,8 @@ Its main goal is to replace the now outdated [Lycodon-API][1] and improve usabil
 ### Notable features (to be expanded):
 - `require`-function (**not** included in CC)
 - Prototype based object-orientation
+- Shortcuts for common operations
 - Simple UI with support for multiple views per monitor & nested screens
-- Decoding of common binary file formats (zlib & images) for use in CC
 
 
 ## Setup
@@ -34,17 +34,16 @@ local Class = require "qua.core.class"
 |Module	|Description					|Notes (Current state)						|
 |---	|---							|---										|
 |core	|Important core features		|Used by most other modules					|
-|ui		|Everything drawn on a monitor	|Screen-change, buttons & basic Drawables	|
-|math	|Small helper functions			|Convert bytes into hex/bin/string			|
-|decode	|File formats & protocols		|Compression (zlib), file formats (PNG)		|
-|crypt	|Checksums & encryption			|CRC, Adler32								|
+|cc		|Classes specific for CC		|Color & Side								|
+|ui		|Everything drawn on a term		|Basic UI elements and containers			|
+|tools	|Small helpers to shorten code	|Array index conversion, RS-delay-queue		|
 
 
 ## ToDo:
-- Download-Helper to download entire repo (vs. `http.get()` for every file)
-- Finish modules
-- Complete documentation for each module
-- Basic examples
+- Serialization
+- Peripherals (Sensor & Printer)
+- Support for binary filetypes (PNG, ZIP)
+- Advanced Image Processing (Rescaling, Dithering, more than 16 colors)
 
 
 [1]: http://lycodon.com/forum/thread/998-lycodon-computercraft-api/
